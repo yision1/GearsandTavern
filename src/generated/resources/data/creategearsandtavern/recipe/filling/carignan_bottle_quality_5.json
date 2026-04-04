@@ -1,0 +1,27 @@
+{
+  "type": "create:filling",
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "type": "neoforge:components",
+      "amount": 250,
+      "components": {
+        "creategearsandtavern:kaleidoscope_drink_variant": {
+          "brew_level": 5,
+          "drink_id": "kaleidoscope_tavern:carignan"
+        }
+      },
+      "fluids": "creategearsandtavern:carignan"
+    }
+  ],
+  "results": [
+    {
+      "components": {
+        "kaleidoscope_tavern:brew_level": 5
+      },
+      "id": "kaleidoscope_tavern:carignan"
+    }
+  ]
+}

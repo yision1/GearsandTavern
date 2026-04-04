@@ -1,0 +1,35 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "tag": "c:fruits/grapes"
+    },
+    {
+      "tag": "c:fruits/grapes"
+    },
+    {
+      "tag": "c:fruits/grapes"
+    },
+    {
+      "tag": "c:fruits/grapes"
+    },
+    {
+      "tag": "c:fruits/grapes"
+    },
+    {
+      "tag": "c:fruits/grapes"
+    },
+    {
+      "tag": "c:fruits/grapes"
+    },
+    {
+      "tag": "c:fruits/grapes"
+    }
+  ],
+  "results": [
+    {
+      "amount": 1000,
+      "id": "kaleidoscope_tavern:grape_juice"
+    }
+  ]
+}

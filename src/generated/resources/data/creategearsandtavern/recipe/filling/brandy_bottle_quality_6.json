@@ -1,0 +1,27 @@
+{
+  "type": "create:filling",
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "type": "neoforge:components",
+      "amount": 250,
+      "components": {
+        "creategearsandtavern:kaleidoscope_drink_variant": {
+          "brew_level": 6,
+          "drink_id": "kaleidoscope_tavern:brandy"
+        }
+      },
+      "fluids": "creategearsandtavern:brandy"
+    }
+  ],
+  "results": [
+    {
+      "components": {
+        "kaleidoscope_tavern:brew_level": 6
+      },
+      "id": "kaleidoscope_tavern:brandy"
+    }
+  ]
+}
