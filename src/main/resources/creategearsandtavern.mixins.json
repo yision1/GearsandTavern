@@ -9,6 +9,8 @@
     "create.FlowSourceFluidHandlerAccessor",
     "create.FlowSourceFluidHandlerMixin",
     "create.FluidPropagatorMixin",
+    "create.PackagerBlockMixin",
+    "create.PackagerBlockEntityMixin",
     "create.PumpBlockEntityMixin",
     "kaleidoscope.BarrelBlockEntityAccessor"
   ],

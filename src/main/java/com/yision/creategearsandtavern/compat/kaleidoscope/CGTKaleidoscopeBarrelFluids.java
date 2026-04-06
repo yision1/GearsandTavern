@@ -5,6 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BarrelBlock;
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarrelBlockEntity;
+import com.simibubi.create.api.packager.InventoryIdentifier;
+import com.simibubi.create.api.packager.unpacking.UnpackingHandler;
+import com.simibubi.create.content.logistics.stockTicker.PackageOrderWithCrafts;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkType;
 import com.yision.creategearsandtavern.mixin.kaleidoscope.BarrelBlockEntityAccessor;
 import com.yision.creategearsandtavern.registry.CGTFluids;
@@ -20,14 +23,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class CGTKaleidoscopeBarrelFluids {
     private static final ResourceLocation BARREL_BE_ID = ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "barrel");
@@ -44,7 +49,7 @@ public class CGTKaleidoscopeBarrelFluids {
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, typed, (be, context) ->
             isAllowedAccessSide(be.getBlockState(), context) ? new BarrelFluidHandler(be, context) : null);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, typed, (be, context) ->
-            isAllowedAccessSide(be.getBlockState(), context) ? new BarrelItemHandler(be, context) : null);
+            isAllowedItemAccessSide(be.getBlockState(), context) ? new BarrelItemHandler(be, context) : null);
 
         Block barrelBlock = BuiltInRegistries.BLOCK.get(BARREL_BLOCK_ID);
         if (barrelBlock == Blocks.AIR) {
@@ -53,7 +58,87 @@ public class CGTKaleidoscopeBarrelFluids {
         event.registerBlock(Capabilities.FluidHandler.BLOCK, (level, pos, state, blockEntity, context) ->
             isAllowedAccessSide(state, context) ? new BarrelFluidHandler(level, pos, state, blockEntity, context) : null, barrelBlock);
         event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, context) ->
-            isAllowedAccessSide(state, context) ? new BarrelItemHandler(level, pos, state, blockEntity, context) : null, barrelBlock);
+            isAllowedItemAccessSide(state, context) ? new BarrelItemHandler(level, pos, state, blockEntity, context) : null, barrelBlock);
+    }
+
+    public static void registerCreateCompat() {
+        Block barrelBlock = BuiltInRegistries.BLOCK.get(BARREL_BLOCK_ID);
+        if (barrelBlock == Blocks.AIR) {
+            return;
+        }
+
+        InventoryIdentifier.REGISTRY.register(barrelBlock, (level, state, face) -> {
+            BlockPos origin = BarrelBlock.getOriginPos(face.getPos(), state);
+            return new InventoryIdentifier.Bounds(BoundingBox.fromCorners(origin.offset(-1, 0, -1), origin.offset(1, 2, 1)));
+        });
+        UnpackingHandler.REGISTRY.register(barrelBlock, CGTKaleidoscopeBarrelFluids::unpackToBarrel);
+    }
+
+    private static boolean unpackToBarrel(Level level, BlockPos pos, BlockState state, Direction side, java.util.List<ItemStack> items,
+                                          PackageOrderWithCrafts orderContext, boolean simulate) {
+        BlockEntity targetBE = level.getBlockEntity(pos);
+        IItemHandler targetInv = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, state, targetBE, side);
+        if (targetInv == null) {
+            return false;
+        }
+
+        if (!simulate) {
+            for (ItemStack itemStack : items) {
+                ItemHandlerHelper.insertItemStacked(targetInv, itemStack.copy(), false);
+            }
+            return true;
+        }
+
+        for (int slot = 0; slot < targetInv.getSlots(); slot++) {
+            ItemStack itemInSlot = targetInv.getStackInSlot(slot);
+            int itemsAddedToSlot = 0;
+
+            for (int boxSlot = 0; boxSlot < items.size(); boxSlot++) {
+                ItemStack toInsert = items.get(boxSlot);
+                if (toInsert.isEmpty()) {
+                    continue;
+                }
+
+                if (targetInv.insertItem(slot, toInsert, true).getCount() == toInsert.getCount()) {
+                    continue;
+                }
+
+                if (itemInSlot.isEmpty()) {
+                    int maxStackSize = targetInv.getSlotLimit(slot);
+                    if (maxStackSize < toInsert.getCount()) {
+                        toInsert.shrink(maxStackSize);
+                        toInsert = toInsert.copyWithCount(maxStackSize);
+                    } else {
+                        items.set(boxSlot, ItemStack.EMPTY);
+                    }
+
+                    itemInSlot = toInsert;
+                    targetInv.insertItem(slot, toInsert, true);
+                    continue;
+                }
+
+                if (!ItemStack.isSameItemSameComponents(toInsert, itemInSlot)) {
+                    continue;
+                }
+
+                int insertedAmount = toInsert.getCount() - targetInv.insertItem(slot, toInsert, true).getCount();
+                int slotLimit = Math.min(itemInSlot.getMaxStackSize(), targetInv.getSlotLimit(slot));
+                int insertableAmountWithPreviousItems =
+                    Math.min(toInsert.getCount(), slotLimit - itemInSlot.getCount() - itemsAddedToSlot);
+
+                int added = Math.min(insertedAmount, Math.max(0, insertableAmountWithPreviousItems));
+                itemsAddedToSlot += added;
+                items.set(boxSlot, toInsert.copyWithCount(toInsert.getCount() - added));
+            }
+        }
+
+        for (ItemStack stack : items) {
+            if (!stack.isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static BlockEntity resolveController(Level level, BlockEntity fallback, BlockPos blockPos, BlockState blockState) {
@@ -88,6 +173,72 @@ public class CGTKaleidoscopeBarrelFluids {
         BlockPos barrelPos = blockEntity.getBlockPos();
         BlockState barrelState = barrelLevel.getBlockState(barrelPos);
         barrelLevel.sendBlockUpdated(barrelPos, barrelState, barrelState, Block.UPDATE_ALL);
+    }
+
+    private static String key(BlockEntity barrel) {
+        if (barrel == null || barrel.getLevel() == null) {
+            return null;
+        }
+        ResourceLocation dimension = barrel.getLevel().dimension().location();
+        return dimension + "|" + barrel.getBlockPos().asLong();
+    }
+
+    private static int getRemainder(BlockEntity barrel) {
+        String key = key(barrel);
+        if (key == null) {
+            return 0;
+        }
+        return VIRTUAL_DRAIN_REMAINDER.getOrDefault(key, 0);
+    }
+
+    private static void setRemainder(BlockEntity barrel, int remainder) {
+        String key = key(barrel);
+        if (key == null) {
+            return;
+        }
+        if (remainder <= 0) {
+            VIRTUAL_DRAIN_REMAINDER.remove(key);
+        } else {
+            VIRTUAL_DRAIN_REMAINDER.put(key, remainder);
+        }
+    }
+
+    private static void clearRemainder(BlockEntity barrel) {
+        String key = key(barrel);
+        if (key != null) {
+            VIRTUAL_DRAIN_REMAINDER.remove(key);
+        }
+    }
+
+    private static boolean consumeVirtualOutput(BlockEntity barrel, int drainedAmount) {
+        BarrelBlockEntity typed = asBarrel(barrel);
+        if (typed == null || drainedAmount <= 0) {
+            return false;
+        }
+
+        int pending = getRemainder(typed) + drainedAmount;
+        int bottles = pending / 250;
+        int remainder = pending % 250;
+        ItemStackHandler output = typed.getOutput();
+
+        if (bottles > 0) {
+            output.extractItem(0, bottles, false);
+        }
+
+        if (!output.getStackInSlot(0).isEmpty()) {
+            setRemainder(typed, remainder);
+            syncChanged(typed);
+            return true;
+        }
+
+        clearRemainder(typed);
+        typed.clearItemsAndFluid();
+        BarrelBlockEntityAccessor accessor = (BarrelBlockEntityAccessor) typed;
+        accessor.cgt$setRecipeId(null);
+        accessor.cgt$setBrewLevel(0);
+        accessor.cgt$setBrewTime(-1);
+        syncChanged(typed);
+        return true;
     }
 
     private static class BarrelFluidHandler implements IFluidHandler {
@@ -157,29 +308,29 @@ public class CGTKaleidoscopeBarrelFluids {
         private FluidStack visibleFluid(BlockEntity barrel) {
             FluidStack current = tank(barrel).getFluidInTank(0);
             if (!current.isEmpty()) {
-                clearRemainder(barrel);
+                CGTKaleidoscopeBarrelFluids.clearRemainder(barrel);
                 return current;
             }
             if (!isBrewing(barrel)) {
-                clearRemainder(barrel);
+                CGTKaleidoscopeBarrelFluids.clearRemainder(barrel);
                 return FluidStack.EMPTY;
             }
             ItemStack result = resultDrink(barrel);
             if (result.isEmpty()) {
-                clearRemainder(barrel);
+                CGTKaleidoscopeBarrelFluids.clearRemainder(barrel);
                 return FluidStack.EMPTY;
             }
             ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(result.getItem());
             if (itemId == null || !"kaleidoscope_tavern".equals(itemId.getNamespace())) {
-                clearRemainder(barrel);
+                CGTKaleidoscopeBarrelFluids.clearRemainder(barrel);
                 return FluidStack.EMPTY;
             }
             try {
                 KaleidoscopeDrinkType type = KaleidoscopeDrinkType.byId(itemId);
-                int availableAmount = Math.max(0, result.getCount() * 250 - getRemainder(barrel));
+                int availableAmount = Math.max(0, result.getCount() * 250 - CGTKaleidoscopeBarrelFluids.getRemainder(barrel));
                 return CGTFluids.of(type, availableAmount, brewLevel(barrel));
             } catch (IllegalArgumentException ignored) {
-                clearRemainder(barrel);
+                CGTKaleidoscopeBarrelFluids.clearRemainder(barrel);
                 return FluidStack.EMPTY;
             }
         }
@@ -199,71 +350,9 @@ public class CGTKaleidoscopeBarrelFluids {
             }
             FluidStack drained = visible.copyWithAmount(drainedAmount);
             if (action.execute()) {
-                consumeVirtualOutput(barrel, drainedAmount);
+                CGTKaleidoscopeBarrelFluids.consumeVirtualOutput(barrel, drainedAmount);
             }
             return drained;
-        }
-
-        private boolean consumeVirtualOutput(BlockEntity barrel, int drainedAmount) {
-            BarrelBlockEntity typed = asBarrel(barrel);
-            if (typed == null || drainedAmount <= 0) {
-                return false;
-            }
-            int pending = getRemainder(typed) + drainedAmount;
-            int bottles = pending / 250;
-            int remainder = pending % 250;
-            ItemStackHandler output = typed.getOutput();
-            if (bottles > 0) {
-                output.extractItem(0, bottles, false);
-            }
-            if (!output.getStackInSlot(0).isEmpty()) {
-                setRemainder(typed, remainder);
-                syncChanged(typed);
-                return true;
-            }
-            clearRemainder(typed);
-            typed.clearItemsAndFluid();
-            BarrelBlockEntityAccessor accessor = (BarrelBlockEntityAccessor) typed;
-            accessor.cgt$setRecipeId(null);
-            accessor.cgt$setBrewLevel(0);
-            accessor.cgt$setBrewTime(-1);
-            syncChanged(typed);
-            return true;
-        }
-
-        private String key(BlockEntity barrel) {
-            if (barrel == null || barrel.getLevel() == null) {
-                return null;
-            }
-            ResourceLocation dimension = barrel.getLevel().dimension().location();
-            return dimension + "|" + barrel.getBlockPos().asLong();
-        }
-
-        private int getRemainder(BlockEntity barrel) {
-            String key = key(barrel);
-            if (key == null) {
-                return 0;
-            }
-            return VIRTUAL_DRAIN_REMAINDER.getOrDefault(key, 0);
-        }
-
-        private void setRemainder(BlockEntity barrel, int remainder) {
-            String key = key(barrel);
-            if (key == null) {
-                return;
-            }
-            if (remainder <= 0) {
-                VIRTUAL_DRAIN_REMAINDER.remove(key);
-            } else {
-                VIRTUAL_DRAIN_REMAINDER.put(key, remainder);
-            }
-        }
-
-        private void clearRemainder(BlockEntity barrel) {
-            String key = key(barrel);
-            if (key != null) {
-                VIRTUAL_DRAIN_REMAINDER.remove(key);
-            }
         }
 
         @Override
@@ -396,6 +485,10 @@ public class CGTKaleidoscopeBarrelFluids {
         return null;
     }
 
+    private static boolean isAllowedItemAccessSide(BlockState state, Direction accessSide) {
+        return isAllowedAccessSide(state, accessSide);
+    }
+
     private static class BarrelItemHandler implements IItemHandler {
         private static final int MAX_FLUID_AMOUNT = 4000;
         private final BlockEntity context;
@@ -454,7 +547,7 @@ public class CGTKaleidoscopeBarrelFluids {
         }
 
         private boolean canAccess() {
-            return isAllowedAccessSide(state, accessSide);
+            return isAllowedItemAccessSide(state, accessSide);
         }
 
         private boolean canInsert(BlockEntity barrel, ItemStack stack) {

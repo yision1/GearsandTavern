@@ -12,6 +12,7 @@ import com.yision.creategearsandtavern.registry.CGTItems;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod(CreateGearsandTavern.MOD_ID)
 public class CreateGearsandTavern {
@@ -22,9 +23,14 @@ public class CreateGearsandTavern {
         modEventBus.addListener(DataGenerators::gatherData);
         modEventBus.addListener(CGTItems::registerCapabilities);
         modEventBus.addListener(CGTKaleidoscopeBarrelFluids::registerCapabilities);
+        modEventBus.addListener(CreateGearsandTavern::commonSetup);
         CreateGearsAndTavernRegistrate.registrate().registerEventListeners(modEventBus);
         CGTDataComponents.register(modEventBus);
         CGTItems.register(modEventBus);
         CGTFluids.register();
+    }
+
+    private static void commonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(CGTKaleidoscopeBarrelFluids::registerCreateCompat);
     }
 }
