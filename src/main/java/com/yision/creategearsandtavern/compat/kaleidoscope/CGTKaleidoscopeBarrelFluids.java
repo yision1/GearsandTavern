@@ -5,9 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BarrelBlock;
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarrelBlockEntity;
+import com.yision.creategearsandtavern.compat.kaleidoscope.KaleidoscopeBarrelProxy;
 import com.simibubi.create.api.packager.InventoryIdentifier;
-import com.simibubi.create.api.packager.unpacking.UnpackingHandler;
-import com.simibubi.create.content.logistics.stockTicker.PackageOrderWithCrafts;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkType;
 import com.yision.creategearsandtavern.mixin.kaleidoscope.BarrelBlockEntityAccessor;
 import com.yision.creategearsandtavern.registry.CGTFluids;
@@ -31,7 +30,6 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class CGTKaleidoscopeBarrelFluids {
@@ -50,15 +48,6 @@ public class CGTKaleidoscopeBarrelFluids {
             isAllowedAccessSide(be.getBlockState(), context) ? new BarrelFluidHandler(be, context) : null);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, typed, (be, context) ->
             isAllowedItemAccessSide(be.getBlockState(), context) ? new BarrelItemHandler(be, context) : null);
-
-        Block barrelBlock = BuiltInRegistries.BLOCK.get(BARREL_BLOCK_ID);
-        if (barrelBlock == Blocks.AIR) {
-            return;
-        }
-        event.registerBlock(Capabilities.FluidHandler.BLOCK, (level, pos, state, blockEntity, context) ->
-            isAllowedAccessSide(state, context) ? new BarrelFluidHandler(level, pos, state, blockEntity, context) : null, barrelBlock);
-        event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, context) ->
-            isAllowedItemAccessSide(state, context) ? new BarrelItemHandler(level, pos, state, blockEntity, context) : null, barrelBlock);
     }
 
     public static void registerCreateCompat() {
@@ -71,77 +60,18 @@ public class CGTKaleidoscopeBarrelFluids {
             BlockPos origin = BarrelBlock.getOriginPos(face.getPos(), state);
             return new InventoryIdentifier.Bounds(BoundingBox.fromCorners(origin.offset(-1, 0, -1), origin.offset(1, 2, 1)));
         });
-        UnpackingHandler.REGISTRY.register(barrelBlock, CGTKaleidoscopeBarrelFluids::unpackToBarrel);
-    }
-
-    private static boolean unpackToBarrel(Level level, BlockPos pos, BlockState state, Direction side, java.util.List<ItemStack> items,
-                                          PackageOrderWithCrafts orderContext, boolean simulate) {
-        BlockEntity targetBE = level.getBlockEntity(pos);
-        IItemHandler targetInv = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, state, targetBE, side);
-        if (targetInv == null) {
-            return false;
-        }
-
-        if (!simulate) {
-            for (ItemStack itemStack : items) {
-                ItemHandlerHelper.insertItemStacked(targetInv, itemStack.copy(), false);
-            }
-            return true;
-        }
-
-        for (int slot = 0; slot < targetInv.getSlots(); slot++) {
-            ItemStack itemInSlot = targetInv.getStackInSlot(slot);
-            int itemsAddedToSlot = 0;
-
-            for (int boxSlot = 0; boxSlot < items.size(); boxSlot++) {
-                ItemStack toInsert = items.get(boxSlot);
-                if (toInsert.isEmpty()) {
-                    continue;
-                }
-
-                if (targetInv.insertItem(slot, toInsert, true).getCount() == toInsert.getCount()) {
-                    continue;
-                }
-
-                if (itemInSlot.isEmpty()) {
-                    int maxStackSize = targetInv.getSlotLimit(slot);
-                    if (maxStackSize < toInsert.getCount()) {
-                        toInsert.shrink(maxStackSize);
-                        toInsert = toInsert.copyWithCount(maxStackSize);
-                    } else {
-                        items.set(boxSlot, ItemStack.EMPTY);
-                    }
-
-                    itemInSlot = toInsert;
-                    targetInv.insertItem(slot, toInsert, true);
-                    continue;
-                }
-
-                if (!ItemStack.isSameItemSameComponents(toInsert, itemInSlot)) {
-                    continue;
-                }
-
-                int insertedAmount = toInsert.getCount() - targetInv.insertItem(slot, toInsert, true).getCount();
-                int slotLimit = Math.min(itemInSlot.getMaxStackSize(), targetInv.getSlotLimit(slot));
-                int insertableAmountWithPreviousItems =
-                    Math.min(toInsert.getCount(), slotLimit - itemInSlot.getCount() - itemsAddedToSlot);
-
-                int added = Math.min(insertedAmount, Math.max(0, insertableAmountWithPreviousItems));
-                itemsAddedToSlot += added;
-                items.set(boxSlot, toInsert.copyWithCount(toInsert.getCount() - added));
-            }
-        }
-
-        for (ItemStack stack : items) {
-            if (!stack.isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private static BlockEntity resolveController(Level level, BlockEntity fallback, BlockPos blockPos, BlockState blockState) {
+        if (fallback instanceof KaleidoscopeBarrelProxy proxy) {
+            BlockPos controllerPos = proxy.cgt$getControllerPos();
+            if (controllerPos != null && level != null) {
+                BlockEntity controller = level.getBlockEntity(controllerPos);
+                if (controller != null) {
+                    return controller;
+                }
+            }
+        }
         if (blockState == null) {
             return fallback;
         }
@@ -243,35 +173,15 @@ public class CGTKaleidoscopeBarrelFluids {
 
     private static class BarrelFluidHandler implements IFluidHandler {
         private final BlockEntity context;
-        private final Level level;
-        private final BlockPos pos;
-        private final BlockState state;
         private final Direction accessSide;
 
         private BarrelFluidHandler(BlockEntity context, Direction accessSide) {
-            this.context = context;
-            this.level = context.getLevel();
-            this.pos = context.getBlockPos();
-            this.state = context.getBlockState();
-            this.accessSide = accessSide;
-        }
-
-        private BarrelFluidHandler(Level level, BlockPos pos, BlockState state, BlockEntity context, Direction accessSide) {
-            this.level = level;
-            this.pos = pos;
-            this.state = state;
             this.context = context;
             this.accessSide = accessSide;
         }
 
         private BlockEntity controller() {
-            if (context != null) {
-                BlockEntity resolved = resolveController(context, context.getBlockPos(), context.getBlockState());
-                if (resolved != null) {
-                    return resolved;
-                }
-            }
-            BlockEntity resolved = resolveController(level == null ? context : level.getBlockEntity(pos), pos, state);
+            BlockEntity resolved = resolveController(context, context.getBlockPos(), context.getBlockState());
             if (resolved != null) {
                 return resolved;
             }
@@ -279,7 +189,7 @@ public class CGTKaleidoscopeBarrelFluids {
         }
 
         private BlockEntity resolveController(BlockEntity fallback, BlockPos blockPos, BlockState blockState) {
-            return CGTKaleidoscopeBarrelFluids.resolveController(level, fallback, blockPos, blockState);
+            return CGTKaleidoscopeBarrelFluids.resolveController(context.getLevel(), fallback, blockPos, blockState);
         }
 
         private boolean isBrewing(BlockEntity barrel) {
@@ -453,7 +363,7 @@ public class CGTKaleidoscopeBarrelFluids {
         }
 
         private boolean canAccess() {
-            return isAllowedAccessSide(state, accessSide);
+            return isAllowedAccessSide(context.getBlockState(), accessSide);
         }
     }
 
@@ -490,37 +400,16 @@ public class CGTKaleidoscopeBarrelFluids {
     }
 
     private static class BarrelItemHandler implements IItemHandler {
-        private static final int MAX_FLUID_AMOUNT = 4000;
         private final BlockEntity context;
-        private final Level level;
-        private final BlockPos pos;
-        private final BlockState state;
         private final Direction accessSide;
 
         private BarrelItemHandler(BlockEntity context, Direction accessSide) {
-            this.context = context;
-            this.level = context.getLevel();
-            this.pos = context.getBlockPos();
-            this.state = context.getBlockState();
-            this.accessSide = accessSide;
-        }
-
-        private BarrelItemHandler(Level level, BlockPos pos, BlockState state, BlockEntity context, Direction accessSide) {
-            this.level = level;
-            this.pos = pos;
-            this.state = state;
             this.context = context;
             this.accessSide = accessSide;
         }
 
         private BlockEntity controller() {
-            if (context != null) {
-                BlockEntity resolved = resolveController(context, context.getBlockPos(), context.getBlockState());
-                if (resolved != null) {
-                    return resolved;
-                }
-            }
-            BlockEntity resolved = resolveController(level == null ? context : level.getBlockEntity(pos), pos, state);
+            BlockEntity resolved = resolveController(context, context.getBlockPos(), context.getBlockState());
             if (resolved != null) {
                 return resolved;
             }
@@ -528,17 +417,12 @@ public class CGTKaleidoscopeBarrelFluids {
         }
 
         private BlockEntity resolveController(BlockEntity fallback, BlockPos blockPos, BlockState blockState) {
-            return CGTKaleidoscopeBarrelFluids.resolveController(level, fallback, blockPos, blockState);
+            return CGTKaleidoscopeBarrelFluids.resolveController(context.getLevel(), fallback, blockPos, blockState);
         }
 
         private ItemStackHandler ingredient(BlockEntity barrel) {
             BarrelBlockEntity typed = asBarrel(barrel);
             return typed == null ? new ItemStackHandler(0) : typed.getIngredient();
-        }
-
-        private FluidTank fluid(BlockEntity barrel) {
-            BarrelBlockEntity typed = asBarrel(barrel);
-            return typed == null ? new FluidTank(0) : typed.getFluid();
         }
 
         private boolean isBrewing(BlockEntity barrel) {
@@ -547,7 +431,7 @@ public class CGTKaleidoscopeBarrelFluids {
         }
 
         private boolean canAccess() {
-            return isAllowedItemAccessSide(state, accessSide);
+            return isAllowedItemAccessSide(context.getBlockState(), accessSide);
         }
 
         private boolean canInsert(BlockEntity barrel, ItemStack stack) {

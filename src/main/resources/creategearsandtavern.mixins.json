@@ -5,14 +5,10 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "creategearsandtavern.refmap.json",
   "mixins": [
-    "create.FlowSourceAccessor",
-    "create.FlowSourceFluidHandlerAccessor",
-    "create.FlowSourceFluidHandlerMixin",
-    "create.FluidPropagatorMixin",
-    "create.PackagerBlockMixin",
-    "create.PackagerBlockEntityMixin",
-    "create.PumpBlockEntityMixin",
-    "kaleidoscope.BarrelBlockEntityAccessor"
+    "kaleidoscope.BarrelBlockMixin",
+    "kaleidoscope.BarrelBlockEntityAccessor",
+    "kaleidoscope.BarrelBlockEntityMixin",
+    "kaleidoscope.BarrelBlockEntityRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
