@@ -40,11 +40,11 @@ public class KaleidoscopeDrinkFluid extends VirtualFluid {
         if (path.startsWith("flowing_")) {
             path = path.substring("flowing_".length());
         }
-        return ResourceLocation.fromNamespaceAndPath(KaleidoscopeDrinkType.NAMESPACE, path);
+        return CGTDrinkCatalog.byPath(path).drinkId();
     }
 
     public static int tintColor(KaleidoscopeDrinkVariant variant) {
-        int baseColor = variant.drinkType().color();
+        int baseColor = variant.definition().color();
         if (variant.brewLevel() <= 0) {
             return 0xff000000 | baseColor;
         }
@@ -64,7 +64,7 @@ public class KaleidoscopeDrinkFluid extends VirtualFluid {
         @Override
         public Component getDescription(FluidStack stack) {
             KaleidoscopeDrinkVariant variant = KaleidoscopeDrinkFluid.variant(stack);
-            Component drinkName = Component.translatable(variant.drinkType().translationKey());
+            Component drinkName = Component.translatable(variant.definition().translationKey());
             if (variant.brewLevel() <= 0) {
                 return drinkName;
             }

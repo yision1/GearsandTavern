@@ -3,7 +3,7 @@ package com.yision.creategearsandtavern.registry;
 import com.github.ysbbbbbb.kaleidoscopetavern.api.blockentity.IBarrel;
 import com.github.ysbbbbbb.kaleidoscopetavern.init.ModDataComponents;
 import com.github.ysbbbbbb.kaleidoscopetavern.init.ModItems;
-import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkType;
+import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkCatalog;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -20,8 +20,8 @@ public class CGTItems {
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerItem(Capabilities.FluidHandler.ITEM,
             (stack, context) -> {
-                KaleidoscopeDrinkType drinkType = drinkTypeOfKaleidoscopeDrink(stack);
-                return drinkType == null ? null : new KaleidoscopeDrinkBottleFluidHandler(stack, drinkType);
+                ResourceLocation drinkId = drinkIdOf(stack);
+                return drinkId == null ? null : new KaleidoscopeDrinkBottleFluidHandler(stack, drinkId);
             },
             ModItems.WINE.get(),
             ModItems.CHAMPAGNE.get(),
@@ -32,28 +32,50 @@ public class CGTItems {
             ModItems.PLUM_WINE.get(),
             ModItems.WHISKEY.get(),
             ModItems.ICE_WINE.get(),
-            ModItems.VINEGAR.get());
+            ModItems.VINEGAR.get(),
+            ModItems.MOLOTOV.get());
+    }
+
+    public static void registerCapabilitiesForKdw(RegisterCapabilitiesEvent event) {
+        for (Item item : BuiltInRegistries.ITEM) {
+            ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
+            if (!itemId.getNamespace().equals("kaleidoscope_dim_wine")) {
+                continue;
+            }
+            if (!CGTDrinkCatalog.hasDrinkId(itemId)) {
+                continue;
+            }
+            event.registerItem(Capabilities.FluidHandler.ITEM,
+                (stack, context) -> {
+                    ResourceLocation drinkId = drinkIdOf(stack);
+                    return drinkId == null ? null : new KaleidoscopeDrinkBottleFluidHandler(stack, drinkId);
+                },
+                item);
+        }
     }
 
     public static void register(IEventBus modEventBus) {
     }
 
-    private static KaleidoscopeDrinkType drinkTypeOfKaleidoscopeDrink(ItemStack stack) {
+    private static ResourceLocation drinkIdOf(ItemStack stack) {
         ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        if (itemId == null || !KaleidoscopeDrinkType.NAMESPACE.equals(itemId.getNamespace())) {
+        if (itemId == null) {
             return null;
         }
-        try {
-            return KaleidoscopeDrinkType.byId(itemId);
-        } catch (IllegalArgumentException ignored) {
-            return null;
+        if (CGTDrinkCatalog.hasDrinkId(itemId)) {
+            return itemId;
         }
+        return null;
     }
 
-    private static int brewLevelOf(ItemStack stack) {
+    private static int fluidBrewLevelOf(ResourceLocation drinkId, ItemStack stack) {
         Integer brewLevel = stack.get(ModDataComponents.BREW_LEVEL.get());
-        int level = brewLevel == null ? IBarrel.BREWING_STARTED : brewLevel;
-        return Math.max(IBarrel.BREWING_STARTED, Math.min(IBarrel.BREWING_FINISHED, level));
+        if (brewLevel == null) {
+            return CGTDrinkCatalog.normalizedBrewLevel(drinkId, CGTDrinkCatalog.LEVELLESS_BREW_LEVEL);
+        }
+        int level = brewLevel;
+        return CGTDrinkCatalog.normalizedBrewLevel(drinkId,
+            Math.max(IBarrel.BREWING_STARTED, Math.min(IBarrel.BREWING_FINISHED, level)));
     }
 
     private static class KaleidoscopeDrinkBottleFluidHandler implements IFluidHandlerItem {
@@ -61,9 +83,9 @@ public class CGTItems {
         private final ItemStack container;
         private final FluidStack fluid;
 
-        private KaleidoscopeDrinkBottleFluidHandler(ItemStack container, KaleidoscopeDrinkType drinkType) {
+        private KaleidoscopeDrinkBottleFluidHandler(ItemStack container, ResourceLocation drinkId) {
             this.container = container;
-            this.fluid = CGTFluids.of(drinkType, BOTTLE_AMOUNT, brewLevelOf(container));
+            this.fluid = CGTFluids.of(drinkId, BOTTLE_AMOUNT, fluidBrewLevelOf(drinkId, container));
         }
 
         @Override

@@ -22,6 +22,7 @@ public class CreateGearsandTavern {
     public CreateGearsandTavern(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(DataGenerators::gatherData);
         modEventBus.addListener(CGTItems::registerCapabilities);
+        modEventBus.addListener(CGTItems::registerCapabilitiesForKdw);
         modEventBus.addListener(CGTKaleidoscopeBarrelFluids::registerCapabilities);
         modEventBus.addListener(CreateGearsandTavern::commonSetup);
         CreateGearsAndTavernRegistrate.registrate().registerEventListeners(modEventBus);

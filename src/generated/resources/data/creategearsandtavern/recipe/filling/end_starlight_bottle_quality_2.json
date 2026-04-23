@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    }
+  ],
+  "type": "create:filling",
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "type": "neoforge:components",
+      "amount": 250,
+      "components": {
+        "creategearsandtavern:kaleidoscope_drink_variant": {
+          "brew_level": 2,
+          "drink_id": "kaleidoscope_dim_wine:end_starlight"
+        }
+      },
+      "fluids": "creategearsandtavern:end_starlight"
+    }
+  ],
+  "results": [
+    {
+      "components": {
+        "kaleidoscope_tavern:brew_level": 2
+      },
+      "id": "kaleidoscope_dim_wine:end_starlight"
+    }
+  ]
+}

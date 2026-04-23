@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "creategearsandtavern.refmap.json",
   "mixins": [
+    "create.CreateRecipeCategoryMixin",
     "kaleidoscope.BarrelBlockMixin",
     "kaleidoscope.BarrelBlockEntityAccessor",
     "kaleidoscope.BarrelBlockEntityMixin",

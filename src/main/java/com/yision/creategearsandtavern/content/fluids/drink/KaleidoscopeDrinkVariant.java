@@ -24,8 +24,8 @@ public record KaleidoscopeDrinkVariant(ResourceLocation drinkId, int brewLevel) 
         return new KaleidoscopeDrinkVariant(drinkType.id(), brewLevel);
     }
 
-    public KaleidoscopeDrinkType drinkType() {
-        return KaleidoscopeDrinkType.byId(drinkId);
+    public CGTDrinkDefinition definition() {
+        return CGTDrinkCatalog.byDrinkId(drinkId);
     }
 
     public String qualityTranslationKey() {

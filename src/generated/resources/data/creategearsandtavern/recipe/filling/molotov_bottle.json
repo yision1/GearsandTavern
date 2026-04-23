@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "kaleidoscope_tavern"
+    }
+  ],
+  "type": "create:filling",
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "type": "neoforge:components",
+      "amount": 250,
+      "components": {
+        "creategearsandtavern:kaleidoscope_drink_variant": {
+          "brew_level": 0,
+          "drink_id": "kaleidoscope_tavern:molotov"
+        }
+      },
+      "fluids": "creategearsandtavern:molotov"
+    }
+  ],
+  "results": [
+    {
+      "id": "kaleidoscope_tavern:molotov"
+    }
+  ]
+}
