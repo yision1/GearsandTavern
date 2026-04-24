@@ -1,0 +1,30 @@
+{
+  "type": "create:emptying",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "the_bumblezone"
+    }
+  ],
+  "ingredients": [
+    {
+      "type": "creategearsandtavern:brew_level_ingredient",
+      "brew_level": 5,
+      "item": "kaleidoscope_dim_wine:sweet_crystal_honey"
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:sweet_crystal_honey",
+      "nbt": "{DrinkVariant:{brew_level:5,drink_id:\"kaleidoscope_dim_wine:sweet_crystal_honey\"}}"
+    }
+  ]
+}

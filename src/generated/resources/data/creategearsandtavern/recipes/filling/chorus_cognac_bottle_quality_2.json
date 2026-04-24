@@ -1,0 +1,32 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:chorus_cognac",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 2,
+          "drink_id": "kaleidoscope_dim_wine:chorus_cognac"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_dim_wine:chorus_cognac",
+      "nbt": {
+        "BrewLevel": 2
+      }
+    }
+  ]
+}

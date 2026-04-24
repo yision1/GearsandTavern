@@ -1,0 +1,32 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:ethereal_noble",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 7,
+          "drink_id": "kaleidoscope_dim_wine:ethereal_noble"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_dim_wine:ethereal_noble",
+      "nbt": {
+        "BrewLevel": 7
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "twilightforest"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:dawnlight_dew",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 7,
+          "drink_id": "kaleidoscope_dim_wine:dawnlight_dew"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_dim_wine:dawnlight_dew",
+      "nbt": {
+        "BrewLevel": 7
+      }
+    }
+  ]
+}

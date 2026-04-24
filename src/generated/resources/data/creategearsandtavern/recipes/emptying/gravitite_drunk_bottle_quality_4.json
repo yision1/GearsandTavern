@@ -1,0 +1,30 @@
+{
+  "type": "create:emptying",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "aether"
+    }
+  ],
+  "ingredients": [
+    {
+      "type": "creategearsandtavern:brew_level_ingredient",
+      "brew_level": 4,
+      "item": "kaleidoscope_dim_wine:gravitite_drunk"
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:gravitite_drunk",
+      "nbt": "{DrinkVariant:{brew_level:4,drink_id:\"kaleidoscope_dim_wine:gravitite_drunk\"}}"
+    }
+  ]
+}

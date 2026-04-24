@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.yision.creategearsandtavern.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "creategearsandtavern.refmap.json",
+  "mixins": [
+    "kaleidoscope.BarrelBlockMixin",
+    "kaleidoscope.BarrelBlockEntityAccessor",
+    "kaleidoscope.BarrelBlockEntityMixin",
+    "create.CreateRecipeCategoryMixin"
+  ],
+  "client": [
+    "kaleidoscope.BarrelBlockEntityRenderMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

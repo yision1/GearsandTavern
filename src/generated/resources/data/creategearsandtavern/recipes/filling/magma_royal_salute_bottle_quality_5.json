@@ -1,0 +1,32 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:magma_royal_salute",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 5,
+          "drink_id": "kaleidoscope_dim_wine:magma_royal_salute"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_dim_wine:magma_royal_salute",
+      "nbt": {
+        "BrewLevel": 5
+      }
+    }
+  ]
+}

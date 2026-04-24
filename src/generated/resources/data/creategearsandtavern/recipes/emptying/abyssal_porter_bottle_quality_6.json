@@ -1,0 +1,26 @@
+{
+  "type": "create:emptying",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    }
+  ],
+  "ingredients": [
+    {
+      "type": "creategearsandtavern:brew_level_ingredient",
+      "brew_level": 6,
+      "item": "kaleidoscope_dim_wine:abyssal_porter"
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:abyssal_porter",
+      "nbt": "{DrinkVariant:{brew_level:6,drink_id:\"kaleidoscope_dim_wine:abyssal_porter\"}}"
+    }
+  ]
+}

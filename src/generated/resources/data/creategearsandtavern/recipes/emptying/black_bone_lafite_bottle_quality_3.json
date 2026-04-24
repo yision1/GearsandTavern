@@ -1,0 +1,26 @@
+{
+  "type": "create:emptying",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    }
+  ],
+  "ingredients": [
+    {
+      "type": "creategearsandtavern:brew_level_ingredient",
+      "brew_level": 3,
+      "item": "kaleidoscope_dim_wine:black_bone_lafite"
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:black_bone_lafite",
+      "nbt": "{DrinkVariant:{brew_level:3,drink_id:\"kaleidoscope_dim_wine:black_bone_lafite\"}}"
+    }
+  ]
+}

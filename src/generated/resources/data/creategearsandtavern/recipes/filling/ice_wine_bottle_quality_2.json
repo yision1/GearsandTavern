@@ -1,0 +1,32 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_tavern"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:ice_wine",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 2,
+          "drink_id": "kaleidoscope_tavern:ice_wine"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:ice_wine",
+      "nbt": {
+        "BrewLevel": 2
+      }
+    }
+  ]
+}

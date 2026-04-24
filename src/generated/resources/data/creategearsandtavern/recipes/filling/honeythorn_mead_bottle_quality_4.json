@@ -1,0 +1,36 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "the_bumblezone"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:honeythorn_mead",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 4,
+          "drink_id": "kaleidoscope_dim_wine:honeythorn_mead"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_dim_wine:honeythorn_mead",
+      "nbt": {
+        "BrewLevel": 4
+      }
+    }
+  ]
+}

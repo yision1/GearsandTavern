@@ -1,0 +1,26 @@
+{
+  "type": "create:emptying",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_tavern"
+    }
+  ],
+  "ingredients": [
+    {
+      "type": "creategearsandtavern:brew_level_ingredient",
+      "brew_level": 4,
+      "item": "kaleidoscope_tavern:brandy"
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:brandy",
+      "nbt": "{DrinkVariant:{brew_level:4,drink_id:\"kaleidoscope_tavern:brandy\"}}"
+    }
+  ]
+}

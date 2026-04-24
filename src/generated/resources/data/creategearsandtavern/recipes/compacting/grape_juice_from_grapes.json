@@ -1,0 +1,35 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "tag": "forge:fruits/grapes"
+    },
+    {
+      "tag": "forge:fruits/grapes"
+    },
+    {
+      "tag": "forge:fruits/grapes"
+    },
+    {
+      "tag": "forge:fruits/grapes"
+    },
+    {
+      "tag": "forge:fruits/grapes"
+    },
+    {
+      "tag": "forge:fruits/grapes"
+    },
+    {
+      "tag": "forge:fruits/grapes"
+    },
+    {
+      "tag": "forge:fruits/grapes"
+    }
+  ],
+  "results": [
+    {
+      "amount": 1000,
+      "fluid": "kaleidoscope_tavern:grape_juice"
+    }
+  ]
+}

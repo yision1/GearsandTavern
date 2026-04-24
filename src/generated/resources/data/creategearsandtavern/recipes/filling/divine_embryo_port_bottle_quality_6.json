@@ -1,0 +1,32 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:divine_embryo_port",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 6,
+          "drink_id": "kaleidoscope_dim_wine:divine_embryo_port"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_dim_wine:divine_embryo_port",
+      "nbt": {
+        "BrewLevel": 6
+      }
+    }
+  ]
+}

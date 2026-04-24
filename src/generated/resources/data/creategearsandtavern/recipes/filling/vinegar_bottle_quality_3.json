@@ -1,0 +1,32 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_tavern"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:vinegar",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 3,
+          "drink_id": "kaleidoscope_tavern:vinegar"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:vinegar",
+      "nbt": {
+        "BrewLevel": 3
+      }
+    }
+  ]
+}

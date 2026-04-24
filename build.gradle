@@ -1,0 +1,360 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'org.spongepowered.mixin' version '0.7.38'
+}
+
+version = mod_version
+group = mod_group_id
+
+def isDataRunRequested = gradle.startParameter.taskNames.any {
+    it.equalsIgnoreCase('runData') || it.toLowerCase().contains('rundata')
+}
+def datagenWorkingDir = project.file('run-data-dev')
+def datagenCompatRepoDir = project.file("$buildDir/datagen-compat-mods")
+
+base {
+    archivesName = mod_id
+}
+
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+println "Mod ID: ${mod_id}, Version: ${mod_version}"
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            arg "-mixin.config=${mod_id}.mixins.json"
+
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+
+        server {
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+        }
+
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+
+        data {
+            workingDirectory datagenWorkingDir
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    maven {
+        url = 'https://maven.createmod.net'
+    }
+    maven {
+        url = 'https://maven.ithundxr.dev/mirror'
+    }
+    maven {
+        url = 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/'
+    }
+    maven {
+        name = "Progwml6's maven"
+        url = 'https://dvs1.progwml6.com/files/maven/'
+    }
+    maven {
+        name = "Jared's maven"
+        url = 'https://maven.blamejared.com/'
+    }
+    maven {
+        name = 'ModMaven'
+        url = 'https://modmaven.dev'
+    }
+    maven {
+        name = 'TheIllusiveC4'
+        url = 'https://maven.theillusivec4.top/'
+    }
+    maven {
+        url 'https://www.cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Modrinth'
+                url = 'https://api.modrinth.com/maven'
+            }
+        }
+        forRepositories(fg.repository)
+        filter {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Curse Maven'
+                url = 'https://cursemaven.com'
+            }
+        }
+        forRepositories(fg.repository)
+        filter {
+            includeGroup 'curse.maven'
+        }
+    }
+    flatDir {
+        dir 'libs'
+        dir datagenCompatRepoDir
+    }
+}
+
+def datagenCompatSpecs = [
+    [group: 'local.datagen', name: 'compat-aether', version: '1.0', pattern: '*aether*.jar'],
+    [group: 'local.datagen', name: 'compat-the_bumblezone', version: '1.0', pattern: '*the_bumblezone*.jar'],
+    [group: 'local.datagen', name: 'compat-twilightforest', version: '1.0', pattern: '*twilightforest*.jar']
+]
+def datagenRuntimeMods = datagenCompatSpecs.collect {
+    [group: it.group, name: it.name, version: it.version]
+} + [
+    [group: 'local.datagen', name: 'compat-athena', version: '1.0']
+]
+
+def createFlatDirJar = { File sourceJar, File targetJar, Closure copySpec ->
+    def unpackDir = new File(datagenCompatRepoDir, "${targetJar.name}-unpacked")
+    delete(unpackDir)
+    delete(targetJar)
+    unpackDir.mkdirs()
+
+    copy {
+        from zipTree(sourceJar)
+        into unpackDir
+        copySpec.delegate = delegate
+        copySpec()
+    }
+
+    ant.zip(destfile: targetJar) {
+        fileset(dir: unpackDir)
+    }
+}
+
+def extractEmbeddedJar = { File sourceJar, String entryName, File targetJar ->
+    delete(targetJar)
+    def zipFile = new java.util.zip.ZipFile(sourceJar)
+    try {
+        def entry = zipFile.getEntry(entryName)
+        if (entry == null) {
+            throw new GradleException("Missing embedded jar ${entryName} in ${sourceJar.name}")
+        }
+        targetJar.withOutputStream { output ->
+            zipFile.getInputStream(entry).withCloseable { input ->
+                output << input
+            }
+        }
+    } finally {
+        zipFile.close()
+    }
+}
+
+def resolveSingleJar = { File baseDir, String label, Closure<FileTree> spec ->
+    def matches = project.fileTree(baseDir, spec).files.toList()
+    if (matches.isEmpty()) {
+        throw new GradleException("Missing ${label}")
+    }
+    if (matches.size() > 1) {
+        throw new GradleException("Expected one ${label}, found ${matches.size()}")
+    }
+    return matches.first()
+}
+
+def prepareDatagenCompatRepo = tasks.register('prepareDatagenCompatRepo') {
+    onlyIf { isDataRunRequested }
+    doLast {
+        delete(datagenCompatRepoDir)
+        datagenCompatRepoDir.mkdirs()
+
+        datagenCompatSpecs.each { spec ->
+            def sourceJar = resolveSingleJar(project.file('run-data/mods'), "datagen compat mod matching ${spec.pattern} in run-data/mods") {
+                include spec.pattern
+            }
+            def targetFile = new File(datagenCompatRepoDir, "${spec.name}-${spec.version}.jar")
+            if (spec.name == 'compat-the_bumblezone') {
+                createFlatDirJar(sourceJar, targetFile) {
+                    exclude 'META-INF/jars/**'
+                    exclude 'META-INF/jarjar/**'
+                }
+
+                def athenaFile = new File(datagenCompatRepoDir, 'compat-athena-1.0.jar')
+                extractEmbeddedJar(sourceJar, 'META-INF/jars/athena-forge-1.20.1-3.1.1.jar', athenaFile)
+            } else {
+                copy {
+                    from sourceJar
+                    into datagenCompatRepoDir
+                    rename { "${spec.name}-${spec.version}.jar" }
+                }
+            }
+        }
+    }
+}
+
+def localKaleidoscopeJars = project.fileTree('../KaleidoscopeTavern-main/build/libs') {
+    include '*.jar'
+    exclude '*-sources.jar'
+    exclude '*-javadoc.jar'
+}
+
+def useLocalCompatJars = providers.gradleProperty('useLocalCompatJars')
+    .map { it.toBoolean() }
+    .orElse(false)
+    .get()
+def useLocalKaleidoscopeJars = useLocalCompatJars && !localKaleidoscopeJars.isEmpty()
+
+def localKdwJars = project.fileTree('../Kaleidoscope-DimensionsWine-1.20.1-forge/build/libs') {
+    include '*.jar'
+    exclude '*-sources.jar'
+    exclude '*-javadoc.jar'
+}
+
+def useLocalKdwJars = useLocalCompatJars && !localKdwJars.isEmpty()
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
+    implementation("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}")
+
+    implementation(fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false })
+    implementation(fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}"))
+    compileOnly(fg.deobf("dev.engine-room.flywheel:flywheel-forge-api-${flywheel_minecraft_version}:${flywheel_version}"))
+    runtimeOnly(fg.deobf("dev.engine-room.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}"))
+    implementation(fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}"))
+
+    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge:${jei_version}")
+    testImplementation fg.deobf("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
+    testImplementation fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}")
+
+    compileOnly fg.deobf("maven.modrinth:jade:${jade_version}")
+    runtimeOnly fg.deobf("maven.modrinth:jade:${jade_version}")
+
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${curios_minecraft_version}:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${curios_minecraft_version}")
+
+    if (useLocalKaleidoscopeJars) {
+        compileOnly files(localKaleidoscopeJars)
+        runtimeOnly files(localKaleidoscopeJars)
+    } else {
+        compileOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
+        runtimeOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
+    }
+
+    if (useLocalKdwJars) {
+        compileOnly files(localKdwJars)
+        runtimeOnly files(localKdwJars)
+    } else {
+        compileOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
+        runtimeOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
+    }
+
+    if (isDataRunRequested) {
+        datagenRuntimeMods.each { compatMod ->
+            runtimeOnly fg.deobf(dependencies.create(group: compatMod.group, name: compatMod.name, version: compatMod.version))
+        }
+    }
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+tasks.matching { it.name == 'runData' }.configureEach {
+    dependsOn prepareDatagenCompatRepo
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+    var replaceProperties = [
+            minecraft_version                : minecraft_version,
+            minecraft_version_range          : minecraft_version_range,
+            forge_version                    : forge_version,
+            forge_version_range              : forge_version_range,
+            loader_version_range             : loader_version_range,
+            create_version_range             : create_version_range,
+            kaleidoscope_tavern_version_range: kaleidoscope_tavern_version_range,
+            mod_id                           : mod_id,
+            mod_name                         : mod_name,
+            mod_license                      : mod_license,
+            mod_version                      : mod_version,
+            mod_authors                      : mod_authors,
+            mod_description                  : mod_description,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : mod_authors,
+                'Specification-Version'   : '1',
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : mod_authors,
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'MixinConfigs'            : "${mod_id}.mixins.json"
+        ])
+    }
+
+    finalizedBy 'reobfJar'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "create:emptying",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_tavern"
+    }
+  ],
+  "ingredients": [
+    {
+      "type": "creategearsandtavern:brew_level_ingredient",
+      "brew_level": 6,
+      "item": "kaleidoscope_tavern:sakura_wine"
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:sakura_wine",
+      "nbt": "{DrinkVariant:{brew_level:6,drink_id:\"kaleidoscope_tavern:sakura_wine\"}}"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_dim_wine"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "aether"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:divine_energy_mist",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 5,
+          "drink_id": "kaleidoscope_dim_wine:divine_energy_mist"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_dim_wine:divine_energy_mist",
+      "nbt": {
+        "BrewLevel": 5
+      }
+    }
+  ]
+}
