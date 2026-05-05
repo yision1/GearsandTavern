@@ -5,9 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BarrelBlock;
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarrelBlockEntity;
-import com.yision.creategearsandtavern.compat.kaleidoscope.KaleidoscopeBarrelProxy;
 import com.simibubi.create.api.packager.InventoryIdentifier;
-import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkType;
+import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkCatalog;
 import com.yision.creategearsandtavern.mixin.kaleidoscope.BarrelBlockEntityAccessor;
 import com.yision.creategearsandtavern.registry.CGTFluids;
 
@@ -171,6 +170,10 @@ public class CGTKaleidoscopeBarrelFluids {
         return true;
     }
 
+    static boolean isVisibleDrinkItem(ResourceLocation itemId) {
+        return itemId != null && CGTDrinkCatalog.hasDrinkId(itemId);
+    }
+
     private static class BarrelFluidHandler implements IFluidHandler {
         private final BlockEntity context;
         private final Direction accessSide;
@@ -231,14 +234,14 @@ public class CGTKaleidoscopeBarrelFluids {
                 return FluidStack.EMPTY;
             }
             ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(result.getItem());
-            if (itemId == null || !"kaleidoscope_tavern".equals(itemId.getNamespace())) {
+            if (!isVisibleDrinkItem(itemId)) {
                 CGTKaleidoscopeBarrelFluids.clearRemainder(barrel);
                 return FluidStack.EMPTY;
             }
             try {
-                KaleidoscopeDrinkType type = KaleidoscopeDrinkType.byId(itemId);
                 int availableAmount = Math.max(0, result.getCount() * 250 - CGTKaleidoscopeBarrelFluids.getRemainder(barrel));
-                return CGTFluids.of(type, availableAmount, brewLevel(barrel));
+                int visibleBrewLevel = CGTDrinkCatalog.normalizedBrewLevel(itemId, brewLevel(barrel));
+                return CGTFluids.of(itemId, availableAmount, visibleBrewLevel);
             } catch (IllegalArgumentException ignored) {
                 CGTKaleidoscopeBarrelFluids.clearRemainder(barrel);
                 return FluidStack.EMPTY;
