@@ -15,6 +15,7 @@ import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkTyp
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkVariant;
 
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 
@@ -43,6 +44,7 @@ public class CGTFluids {
                 return true;
             }
         })
+        .filter(CGTFluids::isEnabled)
         .collect(Collectors.toUnmodifiableMap(
             CGTDrinkDefinition::drinkId,
             def -> registerByPath(def.drinkId().getPath())
@@ -58,6 +60,10 @@ public class CGTFluids {
         return REGISTRATE.virtualFluid(path, POTION_STILL, POTION_FLOW,
                 KaleidoscopeDrinkFluidType::new, KaleidoscopeDrinkFluid::createSource, KaleidoscopeDrinkFluid::createFlowing)
             .register();
+    }
+
+    private static boolean isEnabled(CGTDrinkDefinition definition) {
+        return definition.requiredMods().stream().allMatch(ModList.get()::isLoaded);
     }
 
     public static FluidStack of(KaleidoscopeDrinkType drinkType, int amount, int brewLevel) {

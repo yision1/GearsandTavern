@@ -9,7 +9,9 @@
     "kaleidoscope.BarrelBlockMixin",
     "kaleidoscope.BarrelBlockEntityAccessor",
     "kaleidoscope.BarrelBlockEntityMixin",
-    "kaleidoscope.BarrelBlockEntityRenderMixin"
+    "kaleidoscope.BarrelBlockEntityRenderMixin",
+    "kaleidoscope.BarCabinetBlockBehaviourMixin",
+    "kaleidoscope.BarCabinetBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

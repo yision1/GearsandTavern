@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTKaleidoscopeBarrelFluids;
+import com.yision.creategearsandtavern.compat.kaleidoscope.cabinet.CGTKaleidoscopeBarCabinets;
 import com.yision.creategearsandtavern.datagen.DataGenerators;
 import com.yision.creategearsandtavern.registry.CGTDataComponents;
 import com.yision.creategearsandtavern.registry.CGTFluids;
@@ -24,6 +25,7 @@ public class CreateGearsandTavern {
         modEventBus.addListener(CGTItems::registerCapabilities);
         modEventBus.addListener(CGTItems::registerCapabilitiesForKdw);
         modEventBus.addListener(CGTKaleidoscopeBarrelFluids::registerCapabilities);
+        modEventBus.addListener(CGTKaleidoscopeBarCabinets::registerCapabilities);
         modEventBus.addListener(CreateGearsandTavern::commonSetup);
         CreateGearsAndTavernRegistrate.registrate().registerEventListeners(modEventBus);
         CGTDataComponents.register(modEventBus);
@@ -33,5 +35,6 @@ public class CreateGearsandTavern {
 
     private static void commonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(CGTKaleidoscopeBarrelFluids::registerCreateCompat);
+        event.enqueueWork(CGTKaleidoscopeBarCabinets::registerCreateCompat);
     }
 }
