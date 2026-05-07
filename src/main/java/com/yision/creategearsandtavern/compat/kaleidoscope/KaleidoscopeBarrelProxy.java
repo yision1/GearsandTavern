@@ -14,5 +14,9 @@ public interface KaleidoscopeBarrelProxy {
     boolean cgt$isStructureInitialized();
 
     void cgt$setStructureInitialized(boolean initialized);
+
+    boolean cgt$isRedstonePowered();
+
+    void cgt$setRedstonePowered(boolean powered);
 }
 

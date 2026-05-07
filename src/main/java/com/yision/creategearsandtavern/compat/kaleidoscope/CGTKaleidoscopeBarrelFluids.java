@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -371,31 +370,7 @@ public class CGTKaleidoscopeBarrelFluids {
     }
 
     private static boolean isAllowedAccessSide(BlockState state, Direction accessSide) {
-        if (accessSide == null || state == null) {
-            return true;
-        }
-        Direction facing = readFacing(state);
-        if (facing == null) {
-            return true;
-        }
-        return accessSide == Direction.UP
-            || accessSide == Direction.DOWN
-            || accessSide == facing
-            || accessSide == facing.getOpposite();
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static Direction readFacing(BlockState state) {
-        for (Property<?> property : state.getProperties()) {
-            if (!"facing".equals(property.getName())) {
-                continue;
-            }
-            Object value = state.getValue((Property) property);
-            if (value instanceof Direction direction) {
-                return direction;
-            }
-        }
-        return null;
+        return KaleidoscopeBarrelSides.isAllowedAutomationSide(state, accessSide);
     }
 
     private static boolean isAllowedItemAccessSide(BlockState state, Direction accessSide) {

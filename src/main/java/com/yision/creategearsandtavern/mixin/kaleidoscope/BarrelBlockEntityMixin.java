@@ -27,6 +27,9 @@ public class BarrelBlockEntityMixin implements KaleidoscopeBarrelProxy {
     private static final String CGT_PROXY_PART_TAG = "cgt_proxy_part";
 
     @Unique
+    private static final String CGT_REDSTONE_POWERED_TAG = "cgt_redstone_powered";
+
+    @Unique
     private BlockPos cgt$controllerPos;
 
     @Unique
@@ -34,6 +37,9 @@ public class BarrelBlockEntityMixin implements KaleidoscopeBarrelProxy {
 
     @Unique
     private boolean cgt$structureInitialized;
+
+    @Unique
+    private boolean cgt$redstonePowered;
 
     @Inject(method = "loadAdditional", at = @At("TAIL"))
     private void cgt$loadProxyData(CompoundTag tag, HolderLookup.Provider registries, CallbackInfo ci) {
@@ -45,6 +51,7 @@ public class BarrelBlockEntityMixin implements KaleidoscopeBarrelProxy {
             cgt$controllerPos = self.getBlockPos();
             cgt$proxyPart = false;
         }
+        cgt$redstonePowered = tag.getBoolean(CGT_REDSTONE_POWERED_TAG);
         cgt$structureInitialized = false;
     }
 
@@ -54,6 +61,7 @@ public class BarrelBlockEntityMixin implements KaleidoscopeBarrelProxy {
             tag.putLong(CGT_CONTROLLER_POS_TAG, cgt$controllerPos.asLong());
         }
         tag.putBoolean(CGT_PROXY_PART_TAG, cgt$proxyPart);
+        tag.putBoolean(CGT_REDSTONE_POWERED_TAG, cgt$redstonePowered);
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
@@ -143,6 +151,16 @@ public class BarrelBlockEntityMixin implements KaleidoscopeBarrelProxy {
     @Override
     public void cgt$setStructureInitialized(boolean initialized) {
         this.cgt$structureInitialized = initialized;
+    }
+
+    @Override
+    public boolean cgt$isRedstonePowered() {
+        return cgt$redstonePowered;
+    }
+
+    @Override
+    public void cgt$setRedstonePowered(boolean powered) {
+        this.cgt$redstonePowered = powered;
     }
 }
 
