@@ -2,11 +2,11 @@
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
-      "modid": "twilightforest"
+      "modid": "kaleidoscope_dim_wine"
     },
     {
       "type": "neoforge:mod_loaded",
-      "modid": "kaleidoscope_dim_wine"
+      "modid": "twilightforest"
     }
   ],
   "type": "create:emptying",

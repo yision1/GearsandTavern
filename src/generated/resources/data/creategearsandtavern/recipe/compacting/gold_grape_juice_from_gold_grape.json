@@ -1,0 +1,35 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:gold_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:gold_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:gold_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:gold_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:gold_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:gold_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:gold_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:gold_grape"
+    }
+  ],
+  "results": [
+    {
+      "amount": 1000,
+      "id": "kaleidoscope_tavern:gold_grape_juice"
+    }
+  ]
+}

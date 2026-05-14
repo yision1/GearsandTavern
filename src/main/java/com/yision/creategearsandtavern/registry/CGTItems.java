@@ -2,7 +2,6 @@ package com.yision.creategearsandtavern.registry;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.api.blockentity.IBarrel;
 import com.github.ysbbbbbb.kaleidoscopetavern.init.ModDataComponents;
-import com.github.ysbbbbbb.kaleidoscopetavern.init.ModItems;
 import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkCatalog;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,22 +17,21 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 public class CGTItems {
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerItem(Capabilities.FluidHandler.ITEM,
-            (stack, context) -> {
-                ResourceLocation drinkId = drinkIdOf(stack);
-                return drinkId == null ? null : new KaleidoscopeDrinkBottleFluidHandler(stack, drinkId);
-            },
-            ModItems.WINE.get(),
-            ModItems.CHAMPAGNE.get(),
-            ModItems.VODKA.get(),
-            ModItems.BRANDY.get(),
-            ModItems.CARIGNAN.get(),
-            ModItems.SAKURA_WINE.get(),
-            ModItems.PLUM_WINE.get(),
-            ModItems.WHISKEY.get(),
-            ModItems.ICE_WINE.get(),
-            ModItems.VINEGAR.get(),
-            ModItems.MOLOTOV.get());
+        for (Item item : BuiltInRegistries.ITEM) {
+            ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
+            if (!itemId.getNamespace().equals("kaleidoscope_tavern")) {
+                continue;
+            }
+            if (!CGTDrinkCatalog.hasDrinkId(itemId)) {
+                continue;
+            }
+            event.registerItem(Capabilities.FluidHandler.ITEM,
+                (stack, context) -> {
+                    ResourceLocation drinkId = drinkIdOf(stack);
+                    return drinkId == null ? null : new KaleidoscopeDrinkBottleFluidHandler(stack, drinkId);
+                },
+                item);
+        }
     }
 
     public static void registerCapabilitiesForKdw(RegisterCapabilitiesEvent event) {

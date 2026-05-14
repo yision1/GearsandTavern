@@ -125,19 +125,6 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
-def localKaleidoscopeProjectDir = project.file("../KaleidoscopeTavern-1.21.1")
-def localKaleidoscopeJars = project.fileTree("../KaleidoscopeTavern-1.21.1/build/libs") {
-    include "*.jar"
-    exclude "*-sources.jar"
-    exclude "*-javadoc.jar"
-}
-
-def localKdwProjectDir = project.file("../Kaleidoscope-DimensionsWine-1.21.1-neoforge")
-def localKdwJars = project.fileTree("../Kaleidoscope-DimensionsWine-1.21.1-neoforge/build/libs") {
-    include "*.jar"
-    exclude "*-sources.jar"
-    exclude "*-javadoc.jar"
-}
 def localCompatDatagenMods = project.fileTree("run-data/mods") {
     include "*aether*.jar"
     include "*twilightforest*.jar"
@@ -159,32 +146,17 @@ dependencies {
     compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}+${curios_minecraft_version}:api")
     localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}+${curios_minecraft_version}")
 
-    if (localKaleidoscopeProjectDir.exists()) {
-        compileOnly(localKaleidoscopeJars)
-        localRuntime(localKaleidoscopeJars)
-    } else {
-        compileOnly("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
-        localRuntime("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
-    }
+    compileOnly("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
+    localRuntime("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
 
-    if (localKdwProjectDir.exists()) {
-        compileOnly(localKdwJars)
-        localRuntime(localKdwJars)
-    } else {
-        compileOnly("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
-        localRuntime("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
-    }
+    compileOnly("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
+    localRuntime("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    if (localKaleidoscopeProjectDir.exists()) {
-        testImplementation(localKaleidoscopeJars)
-        testRuntimeOnly(localKaleidoscopeJars)
-    } else {
-        testImplementation("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
-        testRuntimeOnly("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
-    }
+    testImplementation("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
+    testRuntimeOnly("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -235,32 +207,6 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.named('test', Test).configure {
     useJUnitPlatform()
-}
-
-if (localKaleidoscopeProjectDir.exists()) {
-    def buildLocalKaleidoscopeJar = tasks.register("buildLocalKaleidoscopeJar", Exec) {
-        workingDir localKaleidoscopeProjectDir
-        commandLine "powershell", "-NoProfile", "-Command", ".\\gradlew.bat jar"
-    }
-    tasks.named("test").configure {
-        dependsOn buildLocalKaleidoscopeJar
-    }
-    tasks.matching { it.name in ["runClient", "runServer"] }.configureEach {
-        dependsOn buildLocalKaleidoscopeJar
-    }
-}
-
-if (localKdwProjectDir.exists()) {
-    def buildLocalKdwJar = tasks.register("buildLocalKdwJar", Exec) {
-        workingDir localKdwProjectDir
-        commandLine "powershell", "-NoProfile", "-Command", ".\\gradlew.bat jar"
-    }
-    tasks.named("test").configure {
-        dependsOn buildLocalKdwJar
-    }
-    tasks.matching { it.name in ["runClient", "runServer", "runData"] }.configureEach {
-        dependsOn buildLocalKdwJar
-    }
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
