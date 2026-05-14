@@ -1,6 +1,8 @@
 package com.yision.creategearsandtavern.compat.kaleidoscope;
 
+import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarCabinetBlockEntity;
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarrelBlockEntity;
+import com.yision.creategearsandtavern.compat.kaleidoscope.cabinet.BarCabinetLineItemHandler;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -25,15 +27,21 @@ import org.jetbrains.annotations.Nullable;
 public class CGTBlockEntityCapabilities {
     public static void onAttachCapabilities(AttachCapabilitiesEvent<BlockEntity> event) {
         BlockEntity be = event.getObject();
-        if (!(be instanceof BarrelBlockEntity barrel)) {
-            return;
+        if (be instanceof BarrelBlockEntity barrel) {
+            BarrelCapabilityProvider provider = new BarrelCapabilityProvider(barrel);
+            event.addCapability(
+                ResourceLocation.tryBuild("creategearsandtavern", "barrel_handler"),
+                provider
+            );
+            event.addListener(provider::invalidate);
+        } else if (be instanceof BarCabinetBlockEntity) {
+            CabinetCapabilityProvider provider = new CabinetCapabilityProvider(be);
+            event.addCapability(
+                ResourceLocation.tryBuild("creategearsandtavern", "cabinet_handler"),
+                provider
+            );
+            event.addListener(provider::invalidate);
         }
-        BarrelCapabilityProvider provider = new BarrelCapabilityProvider(barrel);
-        event.addCapability(
-            ResourceLocation.tryBuild("creategearsandtavern", "barrel_handler"),
-            provider
-        );
-        event.addListener(provider::invalidate);
     }
 
     private static class BarrelCapabilityProvider implements ICapabilitySerializable<CompoundTag> {
@@ -224,6 +232,47 @@ public class CGTBlockEntityCapabilities {
         private IItemHandler handler() {
             return CGTKaleidoscopeBarrelFluids.getBarrelItemHandler(
                 barrel.getLevel(), barrel.getBlockPos(), barrel.getBlockState(), barrel, side);
+        }
+    }
+
+    private static class CabinetCapabilityProvider implements ICapabilitySerializable<CompoundTag> {
+        private final BlockEntity cabinet;
+        private LazyOptional<IItemHandler> itemHandler = LazyOptional.empty();
+
+        private CabinetCapabilityProvider(BlockEntity cabinet) {
+            this.cabinet = cabinet;
+        }
+
+        @Override
+        public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+            if (cap == ForgeCapabilities.ITEM_HANDLER) {
+                return getItemCapability(side).cast();
+            }
+            return LazyOptional.empty();
+        }
+
+        @Override
+        public CompoundTag serializeNBT() {
+            return new CompoundTag();
+        }
+
+        @Override
+        public void deserializeNBT(CompoundTag nbt) {
+        }
+
+        private LazyOptional<IItemHandler> getItemCapability(@Nullable Direction side) {
+            if (!itemHandler.isPresent()) {
+                IItemHandler handler = BarCabinetLineItemHandler.create(cabinet, side);
+                if (handler != null) {
+                    itemHandler = LazyOptional.of(() -> handler);
+                }
+            }
+            return itemHandler;
+        }
+
+        private void invalidate() {
+            itemHandler.invalidate();
+            itemHandler = LazyOptional.empty();
         }
     }
 }

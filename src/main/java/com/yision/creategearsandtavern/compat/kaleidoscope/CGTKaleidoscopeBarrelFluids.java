@@ -11,7 +11,7 @@ import com.simibubi.create.api.packager.InventoryIdentifier;
 import com.simibubi.create.api.packager.unpacking.UnpackingHandler;
 import com.simibubi.create.content.logistics.stockTicker.PackageOrderWithCrafts;
 import com.yision.creategearsandtavern.compat.kaleidoscope.KaleidoscopeBarrelProxy;
-import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkType;
+import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkCatalog;
 import com.yision.creategearsandtavern.mixin.kaleidoscope.BarrelBlockEntityAccessor;
 import com.yision.creategearsandtavern.registry.CGTFluids;
 
@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -191,18 +190,22 @@ public class CGTKaleidoscopeBarrelFluids {
             return FluidStack.EMPTY;
         }
         ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(result.getItem());
-        if (itemId == null || !"kaleidoscope_tavern".equals(itemId.getNamespace())) {
+        if (!isVisibleDrinkItem(itemId)) {
             clearRemainder(barrel);
             return FluidStack.EMPTY;
         }
         try {
-            KaleidoscopeDrinkType type = KaleidoscopeDrinkType.byId(itemId);
             int availableAmount = Math.max(0, result.getCount() * 250 - getRemainder(barrel));
-            return CGTFluids.of(type, availableAmount, Math.max(1, barrel.getBrewLevel()));
+            int visibleBrewLevel = CGTDrinkCatalog.normalizedBrewLevel(itemId, Math.max(1, barrel.getBrewLevel()));
+            return CGTFluids.of(itemId, availableAmount, visibleBrewLevel);
         } catch (IllegalArgumentException ignored) {
             clearRemainder(barrel);
             return FluidStack.EMPTY;
         }
+    }
+
+    static boolean isVisibleDrinkItem(ResourceLocation itemId) {
+        return itemId != null && CGTDrinkCatalog.hasDrinkId(itemId);
     }
 
     private static void syncChanged(BlockEntity blockEntity) {
@@ -303,31 +306,7 @@ public class CGTKaleidoscopeBarrelFluids {
     }
 
     public static boolean isAllowedAccessSide(BlockState state, Direction accessSide) {
-        if (accessSide == null || state == null) {
-            return true;
-        }
-        Direction facing = readFacing(state);
-        if (facing == null) {
-            return true;
-        }
-        return accessSide == Direction.UP
-            || accessSide == Direction.DOWN
-            || accessSide == facing
-            || accessSide == facing.getOpposite();
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static Direction readFacing(BlockState state) {
-        for (Property<?> property : state.getProperties()) {
-            if (!"facing".equals(property.getName())) {
-                continue;
-            }
-            Object value = state.getValue((Property) property);
-            if (value instanceof Direction direction) {
-                return direction;
-            }
-        }
-        return null;
+        return KaleidoscopeBarrelSides.isAllowedAutomationSide(state, accessSide);
     }
 
     private static boolean isAllowedItemAccessSide(BlockState state, Direction accessSide) {

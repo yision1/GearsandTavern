@@ -8,6 +8,8 @@
     "kaleidoscope.BarrelBlockMixin",
     "kaleidoscope.BarrelBlockEntityAccessor",
     "kaleidoscope.BarrelBlockEntityMixin",
+    "kaleidoscope.BarCabinetBlockMixin",
+    "kaleidoscope.BarCabinetBlockBehaviourMixin",
     "create.CreateRecipeCategoryMixin"
   ],
   "client": [

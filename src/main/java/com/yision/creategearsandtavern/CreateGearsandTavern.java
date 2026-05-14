@@ -7,6 +7,8 @@ import com.yision.creategearsandtavern.compat.jei.CGTKdwDrinkEffectReloadListene
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTBlockEntityCapabilities;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTItemCapabilities;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTKaleidoscopeBarrelFluids;
+import com.yision.creategearsandtavern.compat.kaleidoscope.CGTKaleidoscopeSchematicRequirements;
+import com.yision.creategearsandtavern.compat.kaleidoscope.cabinet.CGTKaleidoscopeBarCabinets;
 import com.yision.creategearsandtavern.datagen.DataGenerators;
 import com.yision.creategearsandtavern.registry.CGTFluids;
 
@@ -50,6 +52,8 @@ public class CreateGearsandTavern {
     private void onFMLCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             CGTKaleidoscopeBarrelFluids.registerCreateCompat();
+            CGTKaleidoscopeBarCabinets.registerCreateCompat();
+            CGTKaleidoscopeSchematicRequirements.registerCreateCompat();
         });
     }
 }
