@@ -80,6 +80,90 @@ public final class CGTDrinkCatalog {
 			0xff6a00,
 			Set.of("kaleidoscope_tavern")
 		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "polaris_sweet_white"),
+			"block.kaleidoscope_tavern.polaris_sweet_white",
+			0x7d7fa0,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "honey_wine"),
+			"block.kaleidoscope_tavern.honey_wine",
+			0x8a6830,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "red_queen"),
+			"block.kaleidoscope_tavern.red_queen",
+			0x7c2d2e,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "miners_star"),
+			"block.kaleidoscope_tavern.miners_star",
+			0xab7d56,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "rum"),
+			"block.kaleidoscope_tavern.rum",
+			0x7d3f31,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "riesling_dry_white"),
+			"block.kaleidoscope_tavern.riesling_dry_white",
+			0x696c32,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "sunset_glow"),
+			"block.kaleidoscope_tavern.sunset_glow",
+			0xb35b2a,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "madame_shexiang"),
+			"block.kaleidoscope_tavern.madame_shexiang",
+			0xb6733a,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "sweet_berry_wine"),
+			"block.kaleidoscope_tavern.sweet_berry_wine",
+			0x596359,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "sherry"),
+			"block.kaleidoscope_tavern.sherry",
+			0x8398ac,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "mother_snow"),
+			"block.kaleidoscope_tavern.mother_snow",
+			0x6f96bf,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "luminous_bride"),
+			"block.kaleidoscope_tavern.luminous_bride",
+			0x80aeba,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "glowflower_brew"),
+			"block.kaleidoscope_tavern.glowflower_brew",
+			0xbcb592,
+			Set.of("kaleidoscope_tavern")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_tavern", "sauvignon_blanc_dry_white"),
+			"block.kaleidoscope_tavern.sauvignon_blanc_dry_white",
+			0x828648,
+			Set.of("kaleidoscope_tavern")
+		),
 
 		new CGTDrinkDefinition(
 			new ResourceLocation("kaleidoscope_dim_wine", "crimson_crescendo"),

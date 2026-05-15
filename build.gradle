@@ -194,55 +194,44 @@ def resolveSingleJar = { File baseDir, String label, Closure<FileTree> spec ->
     return matches.first()
 }
 
-def prepareDatagenCompatRepo = tasks.register('prepareDatagenCompatRepo') {
-    onlyIf { isDataRunRequested }
-    doLast {
-        delete(datagenCompatRepoDir)
-        datagenCompatRepoDir.mkdirs()
+def prepareDatagenCompatRepoFiles = {
+    delete(datagenCompatRepoDir)
+    datagenCompatRepoDir.mkdirs()
 
-        datagenCompatSpecs.each { spec ->
-            def sourceJar = resolveSingleJar(project.file('run-data/mods'), "datagen compat mod matching ${spec.pattern} in run-data/mods") {
-                include spec.pattern
+    datagenCompatSpecs.each { spec ->
+        def sourceJar = resolveSingleJar(project.file('run-data/mods'), "datagen compat mod matching ${spec.pattern} in run-data/mods") {
+            include spec.pattern
+        }
+        def targetFile = new File(datagenCompatRepoDir, "${spec.name}-${spec.version}.jar")
+        if (spec.name == 'compat-the_bumblezone') {
+            createFlatDirJar(sourceJar, targetFile) {
+                exclude 'META-INF/jars/**'
+                exclude 'META-INF/jarjar/**'
             }
-            def targetFile = new File(datagenCompatRepoDir, "${spec.name}-${spec.version}.jar")
-            if (spec.name == 'compat-the_bumblezone') {
-                createFlatDirJar(sourceJar, targetFile) {
-                    exclude 'META-INF/jars/**'
-                    exclude 'META-INF/jarjar/**'
-                }
 
-                def athenaFile = new File(datagenCompatRepoDir, 'compat-athena-1.0.jar')
-                extractEmbeddedJar(sourceJar, 'META-INF/jars/athena-forge-1.20.1-3.1.1.jar', athenaFile)
-            } else {
-                copy {
-                    from sourceJar
-                    into datagenCompatRepoDir
-                    rename { "${spec.name}-${spec.version}.jar" }
-                }
+            def athenaFile = new File(datagenCompatRepoDir, 'compat-athena-1.0.jar')
+            extractEmbeddedJar(sourceJar, 'META-INF/jars/athena-forge-1.20.1-3.1.1.jar', athenaFile)
+        } else {
+            copy {
+                from sourceJar
+                into datagenCompatRepoDir
+                rename { "${spec.name}-${spec.version}.jar" }
             }
         }
     }
 }
 
-def localKaleidoscopeJars = project.fileTree('../KaleidoscopeTavern-main/build/libs') {
-    include '*.jar'
-    exclude '*-sources.jar'
-    exclude '*-javadoc.jar'
+if (isDataRunRequested) {
+    prepareDatagenCompatRepoFiles()
 }
 
-def useLocalCompatJars = providers.gradleProperty('useLocalCompatJars')
-    .map { it.toBoolean() }
-    .orElse(false)
-    .get()
-def useLocalKaleidoscopeJars = useLocalCompatJars && !localKaleidoscopeJars.isEmpty()
-
-def localKdwJars = project.fileTree('../Kaleidoscope-DimensionsWine-1.20.1-forge/build/libs') {
-    include '*.jar'
-    exclude '*-sources.jar'
-    exclude '*-javadoc.jar'
+def prepareDatagenCompatRepo = tasks.register('prepareDatagenCompatRepo') {
+    onlyIf { isDataRunRequested }
+    doLast {
+        prepareDatagenCompatRepoFiles()
+    }
 }
 
-def useLocalKdwJars = useLocalCompatJars && !localKdwJars.isEmpty()
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
@@ -268,21 +257,11 @@ dependencies {
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${curios_minecraft_version}:api")
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${curios_minecraft_version}")
 
-    if (useLocalKaleidoscopeJars) {
-        compileOnly files(localKaleidoscopeJars)
-        runtimeOnly files(localKaleidoscopeJars)
-    } else {
-        compileOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
-        runtimeOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
-    }
+    compileOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
+    runtimeOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
 
-    if (useLocalKdwJars) {
-        compileOnly files(localKdwJars)
-        runtimeOnly files(localKdwJars)
-    } else {
-        compileOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
-        runtimeOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
-    }
+    compileOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
+    runtimeOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
 
     if (isDataRunRequested) {
         datagenRuntimeMods.each { compatMod ->
@@ -345,6 +324,9 @@ tasks.named('jar', Jar).configure {
 }
 
 tasks.withType(JavaCompile).configureEach {
+    if (isDataRunRequested) {
+        dependsOn prepareDatagenCompatRepo
+    }
     options.encoding = 'UTF-8'
 }
 

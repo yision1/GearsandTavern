@@ -1,6 +1,7 @@
 package com.yision.creategearsandtavern.datagen.recipe;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.init.ModFluids;
+import com.github.ysbbbbbb.kaleidoscopetavern.init.ModItems;
 import com.simibubi.create.api.data.recipe.CompactingRecipeGen;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.yision.creategearsandtavern.CreateGearsandTavern;
@@ -24,6 +25,9 @@ public class CGTCompactingRecipeGen extends CompactingRecipeGen {
         createJuiceFromTag("grape_juice_from_grapes", GRAPES, ModFluids.GRAPE_JUICE.get());
         createJuiceFromItem("sweet_berries_juice_from_sweet_berries", Items.SWEET_BERRIES, ModFluids.SWEET_BERRIES_JUICE.get());
         createJuiceFromItem("glow_berries_juice_from_glow_berries", Items.GLOW_BERRIES, ModFluids.GLOW_BERRIES_JUICE.get());
+        createJuiceFromItem("ice_grape_juice_from_ice_grape", ModItems.ICE_GRAPE.get(), ModFluids.ICE_GRAPE_JUICE.get());
+        createJuiceFromItem("gold_grape_juice_from_gold_grape", ModItems.GOLD_GRAPE.get(), ModFluids.GOLD_GRAPE_JUICE.get());
+        createJuiceFromItem("green_grape_juice_from_green_grape", ModItems.GREEN_GRAPE.get(), ModFluids.GREEN_GRAPE_JUICE.get());
     }
 
     private void createJuiceFromTag(String name, TagKey<Item> ingredient, net.minecraft.world.level.material.Fluid result) {

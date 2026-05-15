@@ -1,0 +1,35 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:green_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:green_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:green_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:green_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:green_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:green_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:green_grape"
+    },
+    {
+      "item": "kaleidoscope_tavern:green_grape"
+    }
+  ],
+  "results": [
+    {
+      "amount": 1000,
+      "fluid": "kaleidoscope_tavern:green_grape_juice"
+    }
+  ]
+}
