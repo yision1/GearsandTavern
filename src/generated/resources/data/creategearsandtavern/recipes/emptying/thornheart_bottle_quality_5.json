@@ -3,11 +3,11 @@
   "conditions": [
     {
       "type": "forge:mod_loaded",
-      "modid": "kaleidoscope_dim_wine"
+      "modid": "twilightforest"
     },
     {
       "type": "forge:mod_loaded",
-      "modid": "twilightforest"
+      "modid": "kaleidoscope_dim_wine"
     }
   ],
   "ingredients": [

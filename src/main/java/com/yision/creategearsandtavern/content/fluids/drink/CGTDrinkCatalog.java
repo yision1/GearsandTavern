@@ -431,6 +431,112 @@ public final class CGTDrinkCatalog {
 			"block.kaleidoscope_dim_wine.unbound_skyborn",
 			0xb8bce3,
 			Set.of("kaleidoscope_dim_wine", "aether")
+		),
+
+		// === 世界名酒 (kaleidoscope_world_liquor) ===
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "bombay_sapphire_gin"),
+			"block.kaleidoscope_world_liquor.bombay_sapphire_gin",
+			0x4aa7c8,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "jack_daniel"),
+			"block.kaleidoscope_world_liquor.jack_daniel",
+			0xa45b25,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "smirnoff_red_vodka"),
+			"block.kaleidoscope_world_liquor.smirnoff_red_vodka",
+			0xe8f1f7,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "absolut_vodka"),
+			"block.kaleidoscope_world_liquor.absolut_vodka",
+			0xdcecf5,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "pina_colada"),
+			"block.kaleidoscope_world_liquor.pina_colada",
+			0xf3e6bd,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "maotai"),
+			"block.kaleidoscope_world_liquor.maotai",
+			0xd8cfb8,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "bacardi_carta_blanca"),
+			"block.kaleidoscope_world_liquor.bacardi_carta_blanca",
+			0xf0ead0,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "spiryt_vodka"),
+			"block.kaleidoscope_world_liquor.spiryt_vodka",
+			0xf7fbff,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "skyy_vodka"),
+			"block.kaleidoscope_world_liquor.skyy_vodka",
+			0xb7d8f5,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "johnnie_walker"),
+			"block.kaleidoscope_world_liquor.johnnie_walker",
+			0x9c5527,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "lafite_1982"),
+			"block.kaleidoscope_world_liquor.lafite_1982",
+			0x6d1c2b,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "strongbow"),
+			"block.kaleidoscope_world_liquor.strongbow",
+			0xd79b32,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "dassai"),
+			"block.kaleidoscope_world_liquor.dassai",
+			0xe9e1c9,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "kwas_chlebowy"),
+			"block.kaleidoscope_world_liquor.kwas_chlebowy",
+			0x8a4e2a,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "bamboo_leaf_green_liquor"),
+			"block.kaleidoscope_world_liquor.bamboo_leaf_green_liquor",
+			0x8fae4d,
+			Set.of("kaleidoscope_world_liquor")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_world_liquor", "cool_tea"),
+			"block.kaleidoscope_world_liquor.cool_tea",
+			0x7b3f23,
+			Set.of("kaleidoscope_world_liquor")
+		),
+
+		// 世界名酒注册在 smc 命名空间下的联动桶酿酒
+		new CGTDrinkDefinition(
+			new ResourceLocation("smc", "ice_tea"),
+			"block.smc.ice_tea",
+			0x8a3f1f,
+			Set.of("kaleidoscope_world_liquor")
 		)
 	);
 

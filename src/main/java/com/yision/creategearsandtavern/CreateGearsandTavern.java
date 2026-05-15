@@ -3,7 +3,7 @@ package com.yision.creategearsandtavern;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
-import com.yision.creategearsandtavern.compat.jei.CGTKdwDrinkEffectReloadListener;
+import com.yision.creategearsandtavern.compat.jei.CGTExtraDrinkEffectReloadListener;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTBlockEntityCapabilities;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTItemCapabilities;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTKaleidoscopeBarrelFluids;
@@ -35,7 +35,7 @@ public class CreateGearsandTavern {
 
         MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, this::onAttachItemStackCapabilities);
         MinecraftForge.EVENT_BUS.addGenericListener(BlockEntity.class, this::onAttachBlockEntityCapabilities);
-        MinecraftForge.EVENT_BUS.addListener(CGTKdwDrinkEffectReloadListener::onAddReloadListenerEvent);
+        MinecraftForge.EVENT_BUS.addListener(CGTExtraDrinkEffectReloadListener::onAddReloadListenerEvent);
 
         modEventBus.addListener(this::onFMLCommonSetup);
         modEventBus.addListener(DataGenerators::gatherData);

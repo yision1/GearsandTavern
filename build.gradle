@@ -122,7 +122,7 @@ repositories {
         forRepository {
             maven {
                 name = 'Curse Maven'
-                url = 'https://cursemaven.com'
+                url = 'https://www.cursemaven.com'
             }
         }
         forRepositories(fg.repository)
@@ -132,6 +132,7 @@ repositories {
     }
     flatDir {
         dir 'libs'
+        dir 'run-data/mods'
         dir datagenCompatRepoDir
     }
 }
@@ -139,7 +140,8 @@ repositories {
 def datagenCompatSpecs = [
     [group: 'local.datagen', name: 'compat-aether', version: '1.0', pattern: '*aether*.jar'],
     [group: 'local.datagen', name: 'compat-the_bumblezone', version: '1.0', pattern: '*the_bumblezone*.jar'],
-    [group: 'local.datagen', name: 'compat-twilightforest', version: '1.0', pattern: '*twilightforest*.jar']
+    [group: 'local.datagen', name: 'compat-twilightforest', version: '1.0', pattern: '*twilightforest*.jar'],
+    [group: 'local.datagen', name: 'compat-smc', version: '1.0', pattern: '*smc*.jar']
 ]
 def datagenRuntimeMods = datagenCompatSpecs.collect {
     [group: it.group, name: it.name, version: it.version]
@@ -148,20 +150,37 @@ def datagenRuntimeMods = datagenCompatSpecs.collect {
 ]
 
 def createFlatDirJar = { File sourceJar, File targetJar, Closure copySpec ->
-    def unpackDir = new File(datagenCompatRepoDir, "${targetJar.name}-unpacked")
-    delete(unpackDir)
     delete(targetJar)
-    unpackDir.mkdirs()
+    targetJar.parentFile.mkdirs()
 
-    copy {
-        from zipTree(sourceJar)
-        into unpackDir
-        copySpec.delegate = delegate
-        copySpec()
-    }
+    sourceJar.withInputStream { fileInput ->
+        targetJar.withOutputStream { fileOutput ->
+            def input = new java.util.zip.ZipInputStream(fileInput)
+            def output = new java.util.zip.ZipOutputStream(fileOutput)
+            try {
+                byte[] buffer = new byte[8192]
+                for (def entry = input.nextEntry; entry != null; entry = input.nextEntry) {
+                    String name = entry.name
+                    if (name.startsWith('META-INF/jars/') || name.startsWith('META-INF/jarjar/')) {
+                        input.closeEntry()
+                        continue
+                    }
 
-    ant.zip(destfile: targetJar) {
-        fileset(dir: unpackDir)
+                    output.putNextEntry(new java.util.zip.ZipEntry(name))
+                    if (!entry.directory) {
+                        int read
+                        while ((read = input.read(buffer)) != -1) {
+                            output.write(buffer, 0, read)
+                        }
+                    }
+                    output.closeEntry()
+                    input.closeEntry()
+                }
+            } finally {
+                output.close()
+                input.close()
+            }
+        }
     }
 }
 
@@ -262,6 +281,8 @@ dependencies {
 
     compileOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
     runtimeOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
+
+    implementation fg.deobf("local.mods:kaleidoscope_world_liquor:1.1.4-forge+mc1.20.1-all")
 
     if (isDataRunRequested) {
         datagenRuntimeMods.each { compatMod ->

@@ -3,11 +3,11 @@
   "conditions": [
     {
       "type": "forge:mod_loaded",
-      "modid": "kaleidoscope_dim_wine"
+      "modid": "aether"
     },
     {
       "type": "forge:mod_loaded",
-      "modid": "aether"
+      "modid": "kaleidoscope_dim_wine"
     }
   ],
   "ingredients": [

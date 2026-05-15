@@ -3,11 +3,11 @@
   "conditions": [
     {
       "type": "forge:mod_loaded",
-      "modid": "kaleidoscope_dim_wine"
+      "modid": "the_bumblezone"
     },
     {
       "type": "forge:mod_loaded",
-      "modid": "the_bumblezone"
+      "modid": "kaleidoscope_dim_wine"
     }
   ],
   "ingredients": [

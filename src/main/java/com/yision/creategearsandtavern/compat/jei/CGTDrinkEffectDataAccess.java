@@ -8,15 +8,15 @@ import com.github.ysbbbbbb.kaleidoscopetavern.datamap.resources.DrinkEffectDataR
 import net.minecraft.world.item.Item;
 
 final class CGTDrinkEffectDataAccess {
-    private CGTDrinkEffectDataAccess() {
-    }
+	private CGTDrinkEffectDataAccess() {
+	}
 
-    static DrinkEffectData get(Item item) {
-        return get(item, DrinkEffectDataReloadListener.INSTANCE, CGTKdwDrinkEffectReloadListener.INSTANCE);
-    }
+	static DrinkEffectData get(Item item) {
+		return get(item, DrinkEffectDataReloadListener.INSTANCE, CGTExtraDrinkEffectReloadListener.INSTANCE);
+	}
 
-    static <K, V> V get(K key, Map<K, V> primary, Map<K, V> fallback) {
-        V value = primary.get(key);
-        return value != null ? value : fallback.get(key);
-    }
+	static <K, V> V get(K key, Map<K, V> primary, Map<K, V> fallback) {
+		V value = primary.get(key);
+		return value != null ? value : fallback.get(key);
+	}
 }
