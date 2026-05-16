@@ -1,0 +1,49 @@
+{
+  "type": "create:compacting",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_fruit_brew"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "fruitsdelight"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "ingredients": [
+    {
+      "tag": "forge:fruits/persimmon"
+    },
+    {
+      "tag": "forge:fruits/persimmon"
+    },
+    {
+      "tag": "forge:fruits/persimmon"
+    },
+    {
+      "tag": "forge:fruits/persimmon"
+    },
+    {
+      "tag": "forge:fruits/persimmon"
+    },
+    {
+      "tag": "forge:fruits/persimmon"
+    },
+    {
+      "tag": "forge:fruits/persimmon"
+    },
+    {
+      "tag": "forge:fruits/persimmon"
+    }
+  ],
+  "results": [
+    {
+      "amount": 1000,
+      "fluid": "kaleidoscope_fruit_brew:persimmon_juice"
+    }
+  ]
+}

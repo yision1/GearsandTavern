@@ -537,6 +537,128 @@ public final class CGTDrinkCatalog {
 			"block.smc.ice_tea",
 			0x8a3f1f,
 			Set.of("kaleidoscope_world_liquor")
+		),
+
+		// === 果酒 (kaleidoscope_fruit_brew) ===
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "apple_cider"),
+			"block.kaleidoscope_fruit_brew.apple_cider",
+			0xbd8353,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "bayberry_wine"),
+			"block.kaleidoscope_fruit_brew.bayberry_wine",
+			0x67223a,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "blueberry_wine"),
+			"block.kaleidoscope_fruit_brew.blueberry_wine",
+			0x401e75,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "cranberry_wine"),
+			"block.kaleidoscope_fruit_brew.cranberry_wine",
+			0xac3536,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "durian_wine"),
+			"block.kaleidoscope_fruit_brew.durian_wine",
+			0xba982b,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "fig_wine"),
+			"block.kaleidoscope_fruit_brew.fig_wine",
+			0xa26728,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "glowberry_wine"),
+			"block.kaleidoscope_fruit_brew.glowberry_wine",
+			0xae893a,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "hamimelon_wine"),
+			"block.kaleidoscope_fruit_brew.hamimelon_wine",
+			0xd8883b,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "hawberry_wine"),
+			"block.kaleidoscope_fruit_brew.hawberry_wine",
+			0x8e251b,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "kiwi_wine"),
+			"block.kaleidoscope_fruit_brew.kiwi_wine",
+			0x8ca63c,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "lemon_wine"),
+			"block.kaleidoscope_fruit_brew.lemon_wine",
+			0xbe923a,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "lychee_wine"),
+			"block.kaleidoscope_fruit_brew.lychee_wine",
+			0xbb6184,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "mango_wine"),
+			"block.kaleidoscope_fruit_brew.mango_wine",
+			0xd0771d,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "mangosteen_wine"),
+			"block.kaleidoscope_fruit_brew.mangosteen_wine",
+			0xb77b78,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "orange_wine"),
+			"block.kaleidoscope_fruit_brew.orange_wine",
+			0xdd8c48,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "peach_wine"),
+			"block.kaleidoscope_fruit_brew.peach_wine",
+			0xca6c51,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "pear_wine"),
+			"block.kaleidoscope_fruit_brew.pear_wine",
+			0xb4af66,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "persimmon_wine"),
+			"block.kaleidoscope_fruit_brew.persimmon_wine",
+			0x9a5b45,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "pineapple_wine"),
+			"block.kaleidoscope_fruit_brew.pineapple_wine",
+			0xb68c1b,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_fruit_brew", "tequila"),
+			"block.kaleidoscope_fruit_brew.tequila",
+			0x518276,
+			Set.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
 		)
 	);
 

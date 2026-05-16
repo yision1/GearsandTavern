@@ -42,6 +42,26 @@
     "kaleidoscope_world_liquor:kwas_chlebowy",
     "kaleidoscope_world_liquor:bamboo_leaf_green_liquor",
     "kaleidoscope_world_liquor:cool_tea",
-    "smc:ice_tea"
+    "smc:ice_tea",
+    "kaleidoscope_fruit_brew:apple_cider",
+    "kaleidoscope_fruit_brew:bayberry_wine",
+    "kaleidoscope_fruit_brew:blueberry_wine",
+    "kaleidoscope_fruit_brew:cranberry_wine",
+    "kaleidoscope_fruit_brew:durian_wine",
+    "kaleidoscope_fruit_brew:fig_wine",
+    "kaleidoscope_fruit_brew:glowberry_wine",
+    "kaleidoscope_fruit_brew:hamimelon_wine",
+    "kaleidoscope_fruit_brew:hawberry_wine",
+    "kaleidoscope_fruit_brew:kiwi_wine",
+    "kaleidoscope_fruit_brew:lemon_wine",
+    "kaleidoscope_fruit_brew:lychee_wine",
+    "kaleidoscope_fruit_brew:mango_wine",
+    "kaleidoscope_fruit_brew:mangosteen_wine",
+    "kaleidoscope_fruit_brew:orange_wine",
+    "kaleidoscope_fruit_brew:peach_wine",
+    "kaleidoscope_fruit_brew:pear_wine",
+    "kaleidoscope_fruit_brew:persimmon_wine",
+    "kaleidoscope_fruit_brew:pineapple_wine",
+    "kaleidoscope_fruit_brew:tequila"
   ]
 }

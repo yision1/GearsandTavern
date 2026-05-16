@@ -1,0 +1,34 @@
+{
+  "type": "create:emptying",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_fruit_brew"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "fruitsdelight"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "ingredients": [
+    {
+      "type": "creategearsandtavern:brew_level_ingredient",
+      "brew_level": 1,
+      "item": "kaleidoscope_fruit_brew:apple_cider"
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:apple_cider",
+      "nbt": "{DrinkVariant:{brew_level:1,drink_id:\"kaleidoscope_fruit_brew:apple_cider\"}}"
+    }
+  ]
+}

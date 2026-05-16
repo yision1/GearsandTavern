@@ -1,0 +1,40 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_fruit_brew"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "fruitsdelight"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:lychee_wine",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 1,
+          "drink_id": "kaleidoscope_fruit_brew:lychee_wine"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_fruit_brew:lychee_wine",
+      "nbt": {
+        "BrewLevel": 1
+      }
+    }
+  ]
+}

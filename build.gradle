@@ -14,6 +14,7 @@ def isDataRunRequested = gradle.startParameter.taskNames.any {
     it.equalsIgnoreCase('runData') || it.toLowerCase().contains('rundata')
 }
 def datagenWorkingDir = project.file('run-data-dev')
+def localCompileCompatRepoDir = project.file("$buildDir/local-compat-mods")
 def datagenCompatRepoDir = project.file("$buildDir/datagen-compat-mods")
 
 base {
@@ -131,22 +132,39 @@ repositories {
         }
     }
     flatDir {
+        dir localCompileCompatRepoDir
         dir 'libs'
         dir 'run-data/mods'
         dir datagenCompatRepoDir
     }
 }
 
+configurations {
+    datagenCuisineDelight
+}
+
+def localCompileCompatSpecs = [
+    [name: 'compat-kaleidoscope-fruit-brew', version: '1.0.1', pattern: 'kaleidoscope_fruit_brew_forge_1.20.1-1.0.1.jar'],
+    [name: 'compat-fruitsdelight', version: '1.1.2', pattern: '*fruitsdelight*.jar'],
+    [name: 'compat-farmersdelight', version: '1.20.1-1.3.2', pattern: '*FarmersDelight*.jar']
+]
+
 def datagenCompatSpecs = [
     [group: 'local.datagen', name: 'compat-aether', version: '1.0', pattern: '*aether*.jar'],
     [group: 'local.datagen', name: 'compat-the_bumblezone', version: '1.0', pattern: '*the_bumblezone*.jar'],
     [group: 'local.datagen', name: 'compat-twilightforest', version: '1.0', pattern: '*twilightforest*.jar'],
-    [group: 'local.datagen', name: 'compat-smc', version: '1.0', pattern: '*smc*.jar']
+    [group: 'local.datagen', name: 'compat-smc', version: '1.0', pattern: '*smc*.jar'],
+    [group: 'local.datagen', name: 'compat-farmersdelight', version: '1.0', pattern: '*FarmersDelight*.jar'],
+    [group: 'local.datagen', name: 'compat-fruitsdelight', version: '1.0', pattern: '*fruitsdelight*.jar']
 ]
 def datagenRuntimeMods = datagenCompatSpecs.collect {
     [group: it.group, name: it.name, version: it.version]
 } + [
-    [group: 'local.datagen', name: 'compat-athena', version: '1.0']
+    [group: 'local.datagen', name: 'compat-athena', version: '1.0'],
+    [group: 'local.datagen', name: 'compat-cuisinedelight', version: '1.0'],
+    [group: 'local.datagen', name: 'compat-l2harvester', version: '1.0'],
+    [group: 'local.datagen', name: 'compat-l2library', version: '1.0'],
+    [group: 'local.datagen', name: 'compat-l2serial', version: '1.0']
 ]
 
 def createFlatDirJar = { File sourceJar, File targetJar, Closure copySpec ->
@@ -213,6 +231,24 @@ def resolveSingleJar = { File baseDir, String label, Closure<FileTree> spec ->
     return matches.first()
 }
 
+def prepareLocalCompileCompatRepoFiles = {
+    delete(localCompileCompatRepoDir)
+    localCompileCompatRepoDir.mkdirs()
+
+    localCompileCompatSpecs.each { spec ->
+        def sourceJar = resolveSingleJar(project.file('run-data/mods'), "local compile compat mod matching ${spec.pattern} in run-data/mods") {
+            include spec.pattern
+        }
+        copy {
+            from sourceJar
+            into localCompileCompatRepoDir
+            rename { "${spec.name}-${spec.version}.jar" }
+        }
+    }
+}
+
+prepareLocalCompileCompatRepoFiles()
+
 def prepareDatagenCompatRepoFiles = {
     delete(datagenCompatRepoDir)
     datagenCompatRepoDir.mkdirs()
@@ -230,6 +266,18 @@ def prepareDatagenCompatRepoFiles = {
 
             def athenaFile = new File(datagenCompatRepoDir, 'compat-athena-1.0.jar')
             extractEmbeddedJar(sourceJar, 'META-INF/jars/athena-forge-1.20.1-3.1.1.jar', athenaFile)
+        } else if (spec.name == 'compat-fruitsdelight') {
+            createFlatDirJar(sourceJar, targetFile) {
+                exclude 'META-INF/jars/**'
+                exclude 'META-INF/jarjar/**'
+            }
+
+            def l2harvesterFile = new File(datagenCompatRepoDir, 'compat-l2harvester-1.0.jar')
+            extractEmbeddedJar(sourceJar, 'META-INF/jarjar/l2harvester-0.1.2.jar', l2harvesterFile)
+            def l2libraryFile = new File(datagenCompatRepoDir, 'compat-l2library-1.0.jar')
+            extractEmbeddedJar(sourceJar, 'META-INF/jarjar/l2library-2.4.11-slim.jar', l2libraryFile)
+            def l2serialFile = new File(datagenCompatRepoDir, 'compat-l2serial-1.0.jar')
+            extractEmbeddedJar(sourceJar, 'META-INF/jarjar/l2serial-1.2.0.jar', l2serialFile)
         } else {
             copy {
                 from sourceJar
@@ -238,10 +286,21 @@ def prepareDatagenCompatRepoFiles = {
             }
         }
     }
-}
 
-if (isDataRunRequested) {
-    prepareDatagenCompatRepoFiles()
+    def cuisineDelightJars = configurations.datagenCuisineDelight.resolve().toList()
+    if (cuisineDelightJars.isEmpty()) {
+        throw new GradleException("Missing Cuisine Delight datagen dependency")
+    }
+    if (cuisineDelightJars.size() > 1) {
+        throw new GradleException("Expected one Cuisine Delight datagen dependency, found ${cuisineDelightJars.size()}")
+    }
+    def cuisineDelightJar = cuisineDelightJars.first()
+    createFlatDirJar(cuisineDelightJar, new File(datagenCompatRepoDir, 'compat-cuisinedelight-1.0.jar')) {
+        exclude 'META-INF/jars/**'
+        exclude 'META-INF/jarjar/**'
+    }
+    extractEmbeddedJar(cuisineDelightJar, 'META-INF/jarjar/l2library-2.4.14-slim.jar', new File(datagenCompatRepoDir, 'compat-l2library-1.0.jar'))
+    extractEmbeddedJar(cuisineDelightJar, 'META-INF/jarjar/l2serial-1.2.0.jar', new File(datagenCompatRepoDir, 'compat-l2serial-1.0.jar'))
 }
 
 def prepareDatagenCompatRepo = tasks.register('prepareDatagenCompatRepo') {
@@ -281,6 +340,12 @@ dependencies {
 
     compileOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
     runtimeOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
+
+    compileOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.1")
+    runtimeOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.1")
+    compileOnly fg.deobf("local.mods:compat-fruitsdelight:1.1.2")
+    compileOnly fg.deobf("local.mods:compat-farmersdelight:1.20.1-1.3.2")
+    datagenCuisineDelight "curse.maven:cuisine-delight-893541:7732672"
 
     implementation fg.deobf("local.mods:kaleidoscope_world_liquor:1.1.4-forge+mc1.20.1-all")
 

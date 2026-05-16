@@ -1,0 +1,49 @@
+{
+  "type": "create:compacting",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_fruit_brew"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "fruitsdelight"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "ingredients": [
+    {
+      "tag": "forge:fruits/bayberry"
+    },
+    {
+      "tag": "forge:fruits/bayberry"
+    },
+    {
+      "tag": "forge:fruits/bayberry"
+    },
+    {
+      "tag": "forge:fruits/bayberry"
+    },
+    {
+      "tag": "forge:fruits/bayberry"
+    },
+    {
+      "tag": "forge:fruits/bayberry"
+    },
+    {
+      "tag": "forge:fruits/bayberry"
+    },
+    {
+      "tag": "forge:fruits/bayberry"
+    }
+  ],
+  "results": [
+    {
+      "amount": 1000,
+      "fluid": "kaleidoscope_fruit_brew:bayberry_juice"
+    }
+  ]
+}
