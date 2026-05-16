@@ -131,6 +131,7 @@ def localCompatDatagenMods = project.fileTree("run-data/mods") {
     include "*the_bumblezone*.jar"
     include "*owo-lib-neoforge*.jar"
     include "*resourcefullib*.jar"
+    include "*kaleidoscope_twilight*.jar"
 }
 
 dependencies {
@@ -151,6 +152,8 @@ dependencies {
 
     compileOnly("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
     localRuntime("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
+
+    compileOnly(files("run-data/mods/kaleidoscope_twilight-1.0.2-neoforge+mc1.21.1.jar"))
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")

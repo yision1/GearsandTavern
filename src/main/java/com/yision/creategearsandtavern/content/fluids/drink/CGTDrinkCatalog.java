@@ -433,6 +433,92 @@ public final class CGTDrinkCatalog {
 			"block.kaleidoscope_dim_wine.unbound_skyborn",
 			0xb8bce3,
 			Set.of("kaleidoscope_dim_wine", "aether")
+		),
+
+		// Kaleidoscope Twilight 酒类
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "cave_firefly_brew"),
+			"block.kaleidoscope_twilight.cave_firefly_brew",
+			0x8B643D,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "twilight_dew"),
+			"block.kaleidoscope_twilight.twilight_dew",
+			0x4E7665,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "witchcraft_secret_brew"),
+			"block.kaleidoscope_twilight.witchcraft_secret_brew",
+			0x503552,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "snake_skin_liquor"),
+			"block.kaleidoscope_twilight.snake_skin_liquor",
+			0x5C3630,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "ice_crystal_frost_dew"),
+			"block.kaleidoscope_twilight.ice_crystal_frost_dew",
+			0x476579,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "magic_bean_brew"),
+			"block.kaleidoscope_twilight.magic_bean_brew",
+			0x2E4730,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "ember_eye"),
+			"block.kaleidoscope_twilight.ember_eye",
+			0x5E5B58,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "deer_song"),
+			"block.kaleidoscope_twilight.deer_song",
+			0x805C50,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "thorn_heart"),
+			"block.kaleidoscope_twilight.thorn_heart",
+			0x772038,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "druid_secret_brew"),
+			"block.kaleidoscope_twilight.druid_secret_brew",
+			0x516E41,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "glowing_night_bird_song"),
+			"block.kaleidoscope_twilight.glowing_night_bird_song",
+			0x8F5226,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "glacier_frost_dew"),
+			"block.kaleidoscope_twilight.glacier_frost_dew",
+			0x728599,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "giant_spirit"),
+			"block.kaleidoscope_twilight.giant_spirit",
+			0x9E8736,
+			Set.of("kaleidoscope_twilight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "nature_spirit"),
+			"block.kaleidoscope_twilight.nature_spirit",
+			0x525526,
+			Set.of("kaleidoscope_twilight")
 		)
 	);
 

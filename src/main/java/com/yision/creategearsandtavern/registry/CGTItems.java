@@ -17,27 +17,21 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 public class CGTItems {
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        for (Item item : BuiltInRegistries.ITEM) {
-            ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
-            if (!itemId.getNamespace().equals("kaleidoscope_tavern")) {
-                continue;
-            }
-            if (!CGTDrinkCatalog.hasDrinkId(itemId)) {
-                continue;
-            }
-            event.registerItem(Capabilities.FluidHandler.ITEM,
-                (stack, context) -> {
-                    ResourceLocation drinkId = drinkIdOf(stack);
-                    return drinkId == null ? null : new KaleidoscopeDrinkBottleFluidHandler(stack, drinkId);
-                },
-                item);
-        }
+        registerDrinkCapabilitiesForNamespace(event, "kaleidoscope_tavern");
     }
 
     public static void registerCapabilitiesForKdw(RegisterCapabilitiesEvent event) {
+        registerDrinkCapabilitiesForNamespace(event, "kaleidoscope_dim_wine");
+    }
+
+    public static void registerCapabilitiesForKt(RegisterCapabilitiesEvent event) {
+        registerDrinkCapabilitiesForNamespace(event, "kaleidoscope_twilight");
+    }
+
+    private static void registerDrinkCapabilitiesForNamespace(RegisterCapabilitiesEvent event, String namespace) {
         for (Item item : BuiltInRegistries.ITEM) {
             ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
-            if (!itemId.getNamespace().equals("kaleidoscope_dim_wine")) {
+            if (!itemId.getNamespace().equals(namespace)) {
                 continue;
             }
             if (!CGTDrinkCatalog.hasDrinkId(itemId)) {

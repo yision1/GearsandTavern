@@ -8,6 +8,7 @@ import com.simibubi.create.api.data.recipe.CompactingRecipeGen;
 import com.yision.creategearsandtavern.CreateGearsandTavern;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -15,10 +16,14 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidType;
 
 public class CGTCompactingRecipeGen extends CompactingRecipeGen {
     private static final TagKey<Item> GRAPES = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "fruits/grapes"));
+    private static final ResourceLocation TORCHBERRIES = ResourceLocation.fromNamespaceAndPath("twilightforest", "torchberries");
+    private static final ResourceLocation KT_TORCHBERRY_JUICE =
+        ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "torchberry_juice");
     private static final int JUICE_INGREDIENT_COUNT = 8;
 
     public CGTCompactingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
@@ -30,6 +35,7 @@ public class CGTCompactingRecipeGen extends CompactingRecipeGen {
         createJuiceFromItem("ice_grape_juice_from_ice_grape", ModItems.ICE_GRAPE.get(), ModFluids.ICE_GRAPE_JUICE.get());
         createJuiceFromItem("gold_grape_juice_from_gold_grape", ModItems.GOLD_GRAPE.get(), ModFluids.GOLD_GRAPE_JUICE.get());
         createJuiceFromItem("green_grape_juice_from_green_grape", ModItems.GREEN_GRAPE.get(), ModFluids.GREEN_GRAPE_JUICE.get());
+        createKtTorchberryJuice();
     }
 
     private void createJuiceFromTag(String name, TagKey<Item> ingredient, net.minecraft.world.level.material.Fluid result) {
@@ -38,6 +44,23 @@ public class CGTCompactingRecipeGen extends CompactingRecipeGen {
 
     private void createJuiceFromItem(String name, ItemLike ingredient, net.minecraft.world.level.material.Fluid result) {
         create(name, b -> require(b, ingredient).output(result, FluidType.BUCKET_VOLUME));
+    }
+
+    private void createKtTorchberryJuice() {
+        create("torchberry_juice_from_torchberries", b -> require(b, item(TORCHBERRIES))
+            .output(fluid(KT_TORCHBERRY_JUICE), FluidType.BUCKET_VOLUME)
+            .whenModLoaded("twilightforest")
+            .whenModLoaded("kaleidoscope_twilight"));
+    }
+
+    private static Item item(ResourceLocation id) {
+        return BuiltInRegistries.ITEM.getOptional(id)
+            .orElseThrow(() -> new IllegalStateException("Missing item for recipe generation: " + id));
+    }
+
+    private static Fluid fluid(ResourceLocation id) {
+        return BuiltInRegistries.FLUID.getOptional(id)
+            .orElseThrow(() -> new IllegalStateException("Missing fluid for recipe generation: " + id));
     }
 
     private static <T extends com.simibubi.create.content.processing.recipe.StandardProcessingRecipe.Builder<?>> T require(T builder, TagKey<Item> ingredient) {

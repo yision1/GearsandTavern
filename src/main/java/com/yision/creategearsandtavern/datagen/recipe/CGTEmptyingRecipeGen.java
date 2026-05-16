@@ -1,5 +1,6 @@
 package com.yision.creategearsandtavern.datagen.recipe;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,9 +36,11 @@ public class CGTEmptyingRecipeGen extends EmptyingRecipeGen {
                     b.require(DataComponentIngredient.of(false, new ItemStack(drinkItem)))
                         .output(CGTFluids.of(drinkId, 250, CGTDrinkCatalog.normalizedBrewLevel(drinkId, IBarrel.BREWING_STARTED)))
                         .output(ModItems.EMPTY_BOTTLE.get());
-                    for (String requiredMod : definition.requiredMods()) {
-                        b.whenModLoaded(requiredMod);
-                    }
+                    definition.requiredMods().stream()
+                        .sorted(Comparator
+                            .comparing((String mod) -> !mod.equals(drinkId.getNamespace()))
+                            .thenComparing(mod -> mod))
+                        .forEach(b::whenModLoaded);
                     return b;
                 });
                 continue;
@@ -48,9 +51,11 @@ public class CGTEmptyingRecipeGen extends EmptyingRecipeGen {
                     b.require(DataComponentIngredient.of(false, CGTDrinkRecipeGenHelper.bottleWithBrewLevel(drinkItem, finalLevel)))
                         .output(CGTFluids.of(drinkId, 250, finalLevel))
                         .output(ModItems.EMPTY_BOTTLE.get());
-                    for (String requiredMod : definition.requiredMods()) {
-                        b.whenModLoaded(requiredMod);
-                    }
+                    definition.requiredMods().stream()
+                        .sorted(Comparator
+                            .comparing((String mod) -> !mod.equals(drinkId.getNamespace()))
+                            .thenComparing(mod -> mod))
+                        .forEach(b::whenModLoaded);
                     return b;
                 });
             }

@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "kaleidoscope_twilight"
+    }
+  ],
+  "type": "create:filling",
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "type": "neoforge:components",
+      "amount": 250,
+      "components": {
+        "creategearsandtavern:kaleidoscope_drink_variant": {
+          "brew_level": 5,
+          "drink_id": "kaleidoscope_twilight:deer_song"
+        }
+      },
+      "fluids": "creategearsandtavern:deer_song"
+    }
+  ],
+  "results": [
+    {
+      "components": {
+        "kaleidoscope_tavern:brew_level": 5
+      },
+      "id": "kaleidoscope_twilight:deer_song"
+    }
+  ]
+}
