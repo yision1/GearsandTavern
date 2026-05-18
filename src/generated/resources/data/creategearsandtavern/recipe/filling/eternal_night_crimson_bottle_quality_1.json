@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "kaleidoscope_bloodwine"
+    }
+  ],
+  "type": "create:filling",
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "type": "neoforge:components",
+      "amount": 250,
+      "components": {
+        "creategearsandtavern:kaleidoscope_drink_variant": {
+          "brew_level": 1,
+          "drink_id": "kaleidoscope_bloodwine:eternal_night_crimson"
+        }
+      },
+      "fluids": "creategearsandtavern:eternal_night_crimson"
+    }
+  ],
+  "results": [
+    {
+      "components": {
+        "kaleidoscope_tavern:brew_level": 1
+      },
+      "id": "kaleidoscope_bloodwine:eternal_night_crimson"
+    }
+  ]
+}
