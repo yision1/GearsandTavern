@@ -26,6 +26,7 @@ public class CreateGearsandTavern {
         modEventBus.addListener(CGTItems::registerCapabilities);
         modEventBus.addListener(CGTItems::registerCapabilitiesForKdw);
         modEventBus.addListener(CGTItems::registerCapabilitiesForKt);
+        modEventBus.addListener(CGTItems::registerCapabilitiesForKb);
         modEventBus.addListener(CGTKaleidoscopeBarrelFluids::registerCapabilities);
         modEventBus.addListener(CGTKaleidoscopeBarCabinets::registerCapabilities);
         modEventBus.addListener(CreateGearsandTavern::commonSetup);

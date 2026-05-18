@@ -1,5 +1,6 @@
 package com.yision.creategearsandtavern.datagen.recipe;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.init.ModFluids;
@@ -47,8 +48,13 @@ public class CGTCompactingRecipeGen extends CompactingRecipeGen {
     }
 
     private void createKtTorchberryJuice() {
-        create("torchberry_juice_from_torchberries", b -> require(b, item(TORCHBERRIES))
-            .output(fluid(KT_TORCHBERRY_JUICE), FluidType.BUCKET_VOLUME)
+        Optional<Item> torchberries = BuiltInRegistries.ITEM.getOptional(TORCHBERRIES);
+        Optional<Fluid> juice = BuiltInRegistries.FLUID.getOptional(KT_TORCHBERRY_JUICE);
+        if (torchberries.isEmpty() || juice.isEmpty()) {
+            return;
+        }
+        create("torchberry_juice_from_torchberries", b -> require(b, torchberries.get())
+            .output(juice.get(), FluidType.BUCKET_VOLUME)
             .whenModLoaded("twilightforest")
             .whenModLoaded("kaleidoscope_twilight"));
     }

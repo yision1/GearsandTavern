@@ -28,6 +28,10 @@ public class CGTItems {
         registerDrinkCapabilitiesForNamespace(event, "kaleidoscope_twilight");
     }
 
+    public static void registerCapabilitiesForKb(RegisterCapabilitiesEvent event) {
+        registerDrinkCapabilitiesForNamespace(event, "kaleidoscope_bloodwine");
+    }
+
     private static void registerDrinkCapabilitiesForNamespace(RegisterCapabilitiesEvent event, String namespace) {
         for (Item item : BuiltInRegistries.ITEM) {
             ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
