@@ -341,6 +341,9 @@ dependencies {
     compileOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
     runtimeOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
 
+    compileOnly fg.deobf("local.mods:kaleidoscope_bloodwine:1.0.2")
+    runtimeOnly fg.deobf("local.mods:kaleidoscope_bloodwine:1.0.2")
+
     compileOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.1")
     runtimeOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.1")
     compileOnly fg.deobf("local.mods:compat-fruitsdelight:1.1.2")
