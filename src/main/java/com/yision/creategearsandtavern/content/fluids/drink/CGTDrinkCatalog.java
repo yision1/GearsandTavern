@@ -433,6 +433,74 @@ public final class CGTDrinkCatalog {
 			Set.of("kaleidoscope_dim_wine", "aether")
 		),
 
+		// === Kaleidoscope Bloodwine 血酒 (kaleidoscope_bloodwine) ===
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "blood_grape_wine"),
+			"block.kaleidoscope_bloodwine.blood_grape_wine",
+			0x8a0e20,
+			Set.of("kaleidoscope_bloodwine")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "blood_whiskey"),
+			"block.kaleidoscope_bloodwine.blood_whiskey",
+			0xd61c30,
+			Set.of("kaleidoscope_bloodwine")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "blood_sakura_wine"),
+			"block.kaleidoscope_bloodwine.blood_sakura_wine",
+			0xd94460,
+			Set.of("kaleidoscope_bloodwine")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "blood_champagne"),
+			"block.kaleidoscope_bloodwine.blood_champagne",
+			0xb83a50,
+			Set.of("kaleidoscope_bloodwine")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "blood_vodka"),
+			"block.kaleidoscope_bloodwine.blood_vodka",
+			0xa06870,
+			Set.of("kaleidoscope_bloodwine")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "blood_brandy"),
+			"block.kaleidoscope_bloodwine.blood_brandy",
+			0xe03838,
+			Set.of("kaleidoscope_bloodwine")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "blood_carignan"),
+			"block.kaleidoscope_bloodwine.blood_carignan",
+			0xa81e1e,
+			Set.of("kaleidoscope_bloodwine")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "eternal_night_crimson"),
+			"block.kaleidoscope_bloodwine.eternal_night_crimson",
+			0xc87060,
+			Set.of("kaleidoscope_bloodwine")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "hunter_drink"),
+			"block.kaleidoscope_bloodwine.hunter_drink",
+			0x4070a0,
+			Set.of("kaleidoscope_bloodwine")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "courtyard_blood_brew"),
+			"block.kaleidoscope_bloodwine.courtyard_blood_brew",
+			0xd07030,
+			Set.of("kaleidoscope_bloodwine")
+		),
+		new CGTDrinkDefinition(
+			new ResourceLocation("kaleidoscope_bloodwine", "sinmark_crimson"),
+			"block.kaleidoscope_bloodwine.sinmark_crimson",
+			0xc04830,
+			Set.of("kaleidoscope_bloodwine")
+		),
+
 		// === 世界名酒 (kaleidoscope_world_liquor) ===
 		new CGTDrinkDefinition(
 			new ResourceLocation("kaleidoscope_world_liquor", "bombay_sapphire_gin"),

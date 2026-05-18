@@ -1,0 +1,32 @@
+{
+  "type": "create:filling",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_bloodwine"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:courtyard_blood_brew",
+      "nbt": {
+        "DrinkVariant": {
+          "brew_level": 4,
+          "drink_id": "kaleidoscope_bloodwine:courtyard_blood_brew"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_bloodwine:courtyard_blood_brew",
+      "nbt": {
+        "BrewLevel": 4
+      }
+    }
+  ]
+}

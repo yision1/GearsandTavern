@@ -1,0 +1,26 @@
+{
+  "type": "create:emptying",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "kaleidoscope_bloodwine"
+    }
+  ],
+  "ingredients": [
+    {
+      "type": "creategearsandtavern:brew_level_ingredient",
+      "brew_level": 3,
+      "item": "kaleidoscope_bloodwine:blood_vodka"
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:empty_bottle"
+    },
+    {
+      "amount": 250,
+      "fluid": "creategearsandtavern:blood_vodka",
+      "nbt": "{DrinkVariant:{brew_level:3,drink_id:\"kaleidoscope_bloodwine:blood_vodka\"}}"
+    }
+  ]
+}
