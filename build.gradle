@@ -145,9 +145,6 @@ dependencies {
     localRuntime(localCompatDatagenMods)
     compileOnly("mezz.jei:jei-${jei_minecraft_version}-neoforge:${jei_version}")
     localRuntime("mezz.jei:jei-${jei_minecraft_version}-neoforge:${jei_version}")
-    compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}+${curios_minecraft_version}:api")
-    localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}+${curios_minecraft_version}")
-
     compileOnly("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
     localRuntime("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
 
