@@ -332,9 +332,6 @@ dependencies {
     compileOnly fg.deobf("maven.modrinth:jade:${jade_version}")
     runtimeOnly fg.deobf("maven.modrinth:jade:${jade_version}")
 
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${curios_minecraft_version}:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${curios_minecraft_version}")
-
     compileOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
     runtimeOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
 
