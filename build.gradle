@@ -1,7 +1,5 @@
 plugins {
     id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'org.spongepowered.mixin' version '0.7.38'
@@ -53,17 +51,10 @@ minecraft {
             }
         }
 
-        client {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
+        client {}
 
         server {
-            property 'forge.enabledGameTestNamespaces', mod_id
             args '--nogui'
-        }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
         }
 
         data {
@@ -83,9 +74,6 @@ repositories {
         url = 'https://maven.ithundxr.dev/mirror'
     }
     maven {
-        url = 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/'
-    }
-    maven {
         name = "Progwml6's maven"
         url = 'https://dvs1.progwml6.com/files/maven/'
     }
@@ -96,10 +84,6 @@ repositories {
     maven {
         name = 'ModMaven'
         url = 'https://modmaven.dev'
-    }
-    maven {
-        name = 'TheIllusiveC4'
-        url = 'https://maven.theillusivec4.top/'
     }
     maven {
         url 'https://www.cursemaven.com'
@@ -326,37 +310,31 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge:${jei_version}")
-    testImplementation fg.deobf("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
-    testImplementation fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}")
 
     compileOnly fg.deobf("maven.modrinth:jade:${jade_version}")
-    runtimeOnly fg.deobf("maven.modrinth:jade:${jade_version}")
 
     compileOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
     runtimeOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
 
     compileOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
-    runtimeOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
 
     compileOnly fg.deobf("local.mods:kaleidoscope_bloodwine:1.0.2")
-    runtimeOnly fg.deobf("local.mods:kaleidoscope_bloodwine:1.0.2")
 
     compileOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.1")
-    runtimeOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.1")
     compileOnly fg.deobf("local.mods:compat-fruitsdelight:1.1.2")
     compileOnly fg.deobf("local.mods:compat-farmersdelight:1.20.1-1.3.2")
     datagenCuisineDelight "curse.maven:cuisine-delight-893541:7732672"
 
-    implementation fg.deobf("local.mods:kaleidoscope_world_liquor:1.1.4-forge+mc1.20.1-all")
 
     if (isDataRunRequested) {
         datagenRuntimeMods.each { compatMod ->
             runtimeOnly fg.deobf(dependencies.create(group: compatMod.group, name: compatMod.name, version: compatMod.version))
         }
+        runtimeOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
+        runtimeOnly fg.deobf("local.mods:kaleidoscope_bloodwine:1.0.2")
+        runtimeOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.1")
+        runtimeOnly fg.deobf("local.mods:kaleidoscope_world_liquor:1.1.4-forge+mc1.20.1-all")
     }
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
@@ -414,15 +392,4 @@ tasks.withType(JavaCompile).configureEach {
         dependsOn prepareDatagenCompatRepo
     }
     options.encoding = 'UTF-8'
-}
-
-tasks.named('test', Test).configure {
-    useJUnitPlatform()
-}
-
-idea {
-    module {
-        downloadSources = true
-        downloadJavadoc = true
-    }
 }
