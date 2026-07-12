@@ -3,18 +3,26 @@ package com.yision.creategearsandtavern.compat.kaleidoscope;
 import org.jetbrains.annotations.Nullable;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BarrelBlock;
+import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.PotionBottleBlockEntity;
 import com.github.ysbbbbbb.kaleidoscopetavern.init.ModBlocks;
 import com.github.ysbbbbbb.kaleidoscopetavern.init.ModItems;
+import com.simibubi.create.api.schematic.nbt.SafeNbtWriterRegistry;
 import com.simibubi.create.api.schematic.requirement.SchematicRequirementRegistries;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement.ItemUseType;
+import com.simibubi.create.content.schematics.requirement.ItemRequirement.StrictNbtStackRequirement;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Half;
 
 public final class CGTKaleidoscopeSchematicRequirements {
@@ -26,9 +34,21 @@ public final class CGTKaleidoscopeSchematicRequirements {
             CGTKaleidoscopeSchematicRequirements::barrelRequirement);
         SchematicRequirementRegistries.BLOCKS.register(ModBlocks.GRAPEVINE_TRELLIS.get(),
             CGTKaleidoscopeSchematicRequirements::grapevineTrellisRequirement);
+        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.POTION_BOTTLE.get(),
+            CGTKaleidoscopeSchematicRequirements::potionBottleRequirement);
+        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.XP_BOTTLE.get(),
+            (state, blockEntity) -> new ItemRequirement(ItemUseType.CONSUME, Items.EXPERIENCE_BOTTLE));
+        SafeNbtWriterRegistry.REGISTRY.register(ModBlocks.POTION_BOTTLE_BE.get(),
+            CGTKaleidoscopeSchematicRequirements::writePotionBottleData);
 
         registerLowerHalfRequirement(ModBlocks.STEPLADDER.get(), ModItems.STEPLADDER.get());
         registerLowerHalfRequirement(ModBlocks.CHALKBOARD.get(), ModItems.CHALKBOARD.get());
+        registerDoubleBlockLowerHalfRequirement(ModBlocks.BELL_PENDANT_LAMP.get(),
+            ModItems.BELL_PENDANT_LAMP.get());
+        registerDoubleBlockLowerHalfRequirement(ModBlocks.YELLOW_PENDANT_LAMP.get(),
+            ModItems.YELLOW_PENDANT_LAMP.get());
+        registerDoubleBlockLowerHalfRequirement(ModBlocks.BLUE_PENDANT_LAMP.get(),
+            ModItems.BLUE_PENDANT_LAMP.get());
 
         registerLowerHalfRequirement(ModBlocks.BASE_SANDWICH_BOARD.get(), ModItems.BASE_SANDWICH_BOARD.get());
         registerLowerHalfRequirement(ModBlocks.GRASS_SANDWICH_BOARD.get(), ModItems.GRASS_SANDWICH_BOARD.get());
@@ -64,6 +84,24 @@ public final class CGTKaleidoscopeSchematicRequirements {
             .union(new ItemRequirement(ItemUseType.CONSUME, ModItems.GRAPEVINE.get()));
     }
 
+    private static ItemRequirement potionBottleRequirement(BlockState state, @Nullable BlockEntity blockEntity) {
+        if (!(blockEntity instanceof PotionBottleBlockEntity potionBottle)) {
+            return ItemRequirement.INVALID;
+        }
+        ItemStack potionStack = potionBottle.getPotionStack();
+        if (potionStack.isEmpty()) {
+            return ItemRequirement.INVALID;
+        }
+        return new ItemRequirement(new StrictNbtStackRequirement(potionStack.copyWithCount(1), ItemUseType.CONSUME));
+    }
+
+    private static void writePotionBottleData(BlockEntity blockEntity, CompoundTag tag,
+                                               HolderLookup.Provider registries) {
+        if (blockEntity instanceof PotionBottleBlockEntity potionBottle) {
+            tag.put("Item", potionBottle.getPotionStack().saveOptional(registries));
+        }
+    }
+
     private static void registerLowerHalfRequirement(Block block, Item item) {
         SchematicRequirementRegistries.BLOCKS.register(block,
             (state, blockEntity) -> lowerHalfRequirement(state, blockEntity, item));
@@ -74,5 +112,12 @@ public final class CGTKaleidoscopeSchematicRequirements {
             return new ItemRequirement(ItemUseType.CONSUME, item);
         }
         return ItemRequirement.INVALID;
+    }
+
+    private static void registerDoubleBlockLowerHalfRequirement(Block block, Item item) {
+        SchematicRequirementRegistries.BLOCKS.register(block, (state, blockEntity) ->
+            state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER
+                ? new ItemRequirement(ItemUseType.CONSUME, item)
+                : ItemRequirement.INVALID);
     }
 }
