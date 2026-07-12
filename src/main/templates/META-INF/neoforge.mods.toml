@@ -114,16 +114,23 @@ config="${mod_id}.mixins.json"
     side="BOTH"
 
 [[dependencies.${mod_id}]]
+    modId="kaleidoscope_dim_wine"
+    type="optional"
+    versionRange="[1.5.3,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
     modId="kaleidoscope_bloodwine"
     type="optional"
-    versionRange="[1.0.0,)"
+    versionRange="[1.1.0,)"
     ordering="AFTER"
     side="BOTH"
 
 [[dependencies.${mod_id}]]
     modId="fluid"
     type="optional"
-    versionRange="[9.9.9,)"
+    versionRange="[,1.2.5)"
     ordering="AFTER"
     side="BOTH"
 

@@ -444,6 +444,66 @@ public final class CGTDrinkCatalog {
 			0xb8bce3,
 			Set.of("kaleidoscope_dim_wine", "aether")
 		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "divinity"),
+			"block.kaleidoscope_dim_wine.divinity",
+			0xb3926e,
+			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "star_trail"),
+			"block.kaleidoscope_dim_wine.star_trail",
+			0x938f8f,
+			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "aurora"),
+			"block.kaleidoscope_dim_wine.aurora",
+			0x68209a,
+			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "eclipse"),
+			"block.kaleidoscope_dim_wine.eclipse",
+			0x892a12,
+			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "lunar_eclipse"),
+			"block.kaleidoscope_dim_wine.lunar_eclipse",
+			0x2a334a,
+			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "deep_freeze"),
+			"block.kaleidoscope_dim_wine.deep_freeze",
+			0xc1c4cd,
+			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "blood_moon"),
+			"block.kaleidoscope_dim_wine.blood_moon",
+			0xc81616,
+			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "abyss"),
+			"block.kaleidoscope_dim_wine.abyss",
+			0x88180c,
+			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "blazing_sun"),
+			"block.kaleidoscope_dim_wine.blazing_sun",
+			0xff660e,
+			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
+		),
+		new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "wind_trace"),
+			"block.kaleidoscope_dim_wine.wind_trace",
+			0x6582ae,
+			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
+		),
 
 		// Kaleidoscope Bloodwine 血酒
 		new CGTDrinkDefinition(
