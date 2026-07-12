@@ -1,14 +1,18 @@
 package com.yision.creategearsandtavern.registry;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.github.ysbbbbbb.kaleidoscopetavern.datamap.data.DrinkEffectData;
+import com.github.ysbbbbbb.kaleidoscopetavern.init.ModDataComponents;
+import com.simibubi.create.AllFluids;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.util.entry.FluidEntry;
 import com.yision.creategearsandtavern.CreateGearsAndTavernRegistrate;
-import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkDefinition;
 import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkCatalog;
+import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkDefinition;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkFluid;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkFluid.KaleidoscopeDrinkFluidType;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkType;
@@ -50,6 +54,8 @@ public class CGTFluids {
             def -> registerByPath(def.drinkId().getPath())
         ));
 
+    public static final FluidEntry<KaleidoscopeDrinkFluid> SIGNATURE_COCKTAIL = getEntry(CGTDrinkCatalog.SIGNATURE_COCKTAIL_ID);
+
     private static FluidEntry<KaleidoscopeDrinkFluid> register(KaleidoscopeDrinkType drinkType) {
         return REGISTRATE.virtualFluid(drinkType.id().getPath(), POTION_STILL, POTION_FLOW,
                 KaleidoscopeDrinkFluidType::new, KaleidoscopeDrinkFluid::createSource, KaleidoscopeDrinkFluid::createFlowing)
@@ -77,6 +83,13 @@ public class CGTFluids {
         FluidStack fluidStack = new FluidStack(fluidEntry.get().getSource(), amount);
         fluidStack.set(CGTDataComponents.KALEIDOSCOPE_DRINK_VARIANT, new KaleidoscopeDrinkVariant(drinkId, brewLevel));
         return fluidStack;
+    }
+
+    public static FluidStack signatureCocktailStack(int amount, List<DrinkEffectData.Entry> effects, int color) {
+        FluidStack stack = of(CGTDrinkCatalog.SIGNATURE_COCKTAIL_ID, amount, CGTDrinkCatalog.LEVELLESS_BREW_LEVEL);
+        stack.set(ModDataComponents.SIGNATURE_COCKTAIL_EFFECTS.get(), effects);
+        stack.set(ModDataComponents.SIGNATURE_COCKTAIL_COLOR.get(), color);
+        return stack;
     }
 
     public static FluidStack bucketOf(KaleidoscopeDrinkType drinkType) {

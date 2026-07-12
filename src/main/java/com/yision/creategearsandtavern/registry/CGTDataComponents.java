@@ -8,8 +8,10 @@ import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkVar
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponentType.Builder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import com.mojang.serialization.Codec;
 
 public class CGTDataComponents {
     private static final DeferredRegister.DataComponents DATA_COMPONENTS =
@@ -18,6 +20,11 @@ public class CGTDataComponents {
     public static final DataComponentType<KaleidoscopeDrinkVariant> KALEIDOSCOPE_DRINK_VARIANT = register(
         "kaleidoscope_drink_variant",
         builder -> builder.persistent(KaleidoscopeDrinkVariant.CODEC).networkSynchronized(KaleidoscopeDrinkVariant.STREAM_CODEC)
+    );
+
+    public static final DataComponentType<Integer> SHAKER_COCKTAIL_AMOUNT = register(
+        "shaker_cocktail_amount",
+        builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT)
     );
 
     private static <T> DataComponentType<T> register(String name, UnaryOperator<Builder<T>> builder) {

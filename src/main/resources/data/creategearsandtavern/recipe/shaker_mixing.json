@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "kaleidoscope_tavern"
+    }
+  ],
+  "type": "creategearsandtavern:shaker_mixing",
+  "ingredients": [
+    {
+      "type": "creategearsandtavern:ready_shaker"
+    }
+  ],
+  "results": [],
+  "processing_time": 614
+}

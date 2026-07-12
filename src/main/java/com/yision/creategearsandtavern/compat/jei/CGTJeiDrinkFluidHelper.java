@@ -6,6 +6,9 @@ import java.util.Locale;
 import com.github.ysbbbbbb.kaleidoscopetavern.api.blockentity.IBarrel;
 import com.github.ysbbbbbb.kaleidoscopetavern.datamap.data.DrinkEffectData;
 import com.github.ysbbbbbb.kaleidoscopetavern.datamap.resources.DrinkEffectDataReloadListener;
+import com.github.ysbbbbbb.kaleidoscopetavern.init.ModDataComponents;
+import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkCatalog;
+import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkDefinition;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkFluid;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkVariant;
 
@@ -42,6 +45,19 @@ public final class CGTJeiDrinkFluidHelper {
 		}
 
 		KaleidoscopeDrinkVariant variant = KaleidoscopeDrinkFluid.variant(fluidStack);
+
+		if (CGTDrinkCatalog.isSignatureCocktail(variant.drinkId())) {
+			List<DrinkEffectData.Entry> effects = fluidStack.get(ModDataComponents.SIGNATURE_COCKTAIL_EFFECTS.get());
+			if (effects == null || effects.isEmpty()) {
+				tooltip.add(NO_EFFECT);
+				return;
+			}
+			for (DrinkEffectData.Entry entry : effects) {
+				tooltip.add(formatEffect(entry));
+			}
+			return;
+		}
+
 		java.util.Optional<Item> drinkItem = BuiltInRegistries.ITEM.getOptional(variant.drinkId());
 		if (drinkItem.isEmpty()) {
 			return;
@@ -52,7 +68,13 @@ public final class CGTJeiDrinkFluidHelper {
 			return;
 		}
 
-		int effectIndex = variant.brewLevel() - IBarrel.BREWING_STARTED;
+		int effectIndex;
+		CGTDrinkDefinition definition = variant.definition();
+		if (definition.servingKind() == CGTDrinkDefinition.ServingKind.COCKTAIL_GLASS) {
+			effectIndex = 0;
+		} else {
+			effectIndex = variant.brewLevel() - IBarrel.BREWING_STARTED;
+		}
 		if (effectIndex < 0 || effectIndex >= effectData.effects().size()) {
 			return;
 		}

@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "kaleidoscope_tavern"
+    }
+  ],
+  "type": "creategearsandtavern:signature_cocktail_filling",
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_glassware"
+    },
+    {
+      "type": "creategearsandtavern:signature_cocktail_fluid",
+      "amount": 250
+    }
+  ],
+  "results": [
+    {
+      "id": "kaleidoscope_tavern:signature_cocktail",
+      "components": {
+        "kaleidoscope_tavern:signature_cocktail_color": 5592575,
+        "kaleidoscope_tavern:signature_cocktail_effects": []
+      }
+    }
+  ]
+}

@@ -8,9 +8,15 @@ import java.util.stream.Collectors;
 
 import net.minecraft.resources.ResourceLocation;
 
+import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkDefinition.ServingKind;
+import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkDefinition.TransferMode;
+
 public final class CGTDrinkCatalog {
 	private static final ResourceLocation MOLOTOV_ID = ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "molotov");
+	public static final ResourceLocation SIGNATURE_COCKTAIL_ID = ResourceLocation.fromNamespaceAndPath("creategearsandtavern", "signature_cocktail");
 	public static final int LEVELLESS_BREW_LEVEL = 0;
+	public static final int COCKTAIL_AMOUNT = 250;
+	public static final int SIGNATURE_COCKTAIL_DEFAULT_COLOR = 0x5555ff;
 
 	private static final List<CGTDrinkDefinition> DEFINITIONS = List.of(
 
@@ -78,7 +84,11 @@ public final class CGTDrinkCatalog {
 			MOLOTOV_ID,
 			"block.kaleidoscope_tavern.molotov",
 			0xff6a00,
-			Set.of("kaleidoscope_tavern")
+			Set.of("kaleidoscope_tavern"),
+			ServingKind.BOTTLE,
+			250,
+			false,
+			TransferMode.STATIC_RECIPE
 		),
 
 		// 1.1.1 新更新的酒
@@ -587,8 +597,45 @@ public final class CGTDrinkCatalog {
 			"block.kaleidoscope_twilight.nature_spirit",
 			0x525526,
 			Set.of("kaleidoscope_twilight")
+		),
+
+		cocktail("white_lady", 0xF4E5C2),
+		cocktail("emerald", 0x2EA674),
+		cocktail("brass_heart", 0xC99A4B),
+		cocktail("godfather", 0xC07A3A),
+		cocktail("grasshopper", 0x6FA84F),
+		cocktail("screwdriver", 0xE89224),
+		cocktail("mojito", 0xA9CC5F),
+		cocktail("allium_garden", 0xB57EDC),
+		cocktail("depth_charge", 0xC66A2E),
+		cocktail("nether_special", 0x8A2BE2),
+		cocktail("bloody_mary", 0xB11E1E),
+		cocktail("sculk_special", 0x0E5B6B),
+
+		new CGTDrinkDefinition(
+			SIGNATURE_COCKTAIL_ID,
+			"block.kaleidoscope_tavern.signature_cocktail",
+			SIGNATURE_COCKTAIL_DEFAULT_COLOR,
+			Set.of("kaleidoscope_tavern"),
+			ServingKind.COCKTAIL_GLASS,
+			COCKTAIL_AMOUNT,
+			false,
+			TransferMode.COMPONENT_AWARE
 		)
 	);
+
+	private static CGTDrinkDefinition cocktail(String path, int color) {
+		return new CGTDrinkDefinition(
+			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", path),
+			"block.kaleidoscope_tavern." + path,
+			color,
+			Set.of("kaleidoscope_tavern"),
+			ServingKind.COCKTAIL_GLASS,
+			COCKTAIL_AMOUNT,
+			false,
+			TransferMode.STATIC_RECIPE
+		);
+	}
 
 	private static final Map<ResourceLocation, CGTDrinkDefinition> BY_ID = DEFINITIONS.stream()
 		.collect(Collectors.toUnmodifiableMap(CGTDrinkDefinition::drinkId, Function.identity()));
@@ -626,7 +673,14 @@ public final class CGTDrinkCatalog {
 	}
 
 	public static int normalizedBrewLevel(ResourceLocation id, int brewLevel) {
-		return hasSingleVariant(id) ? LEVELLESS_BREW_LEVEL : brewLevel;
+		if (!BY_ID.containsKey(id)) {
+			return brewLevel;
+		}
+		return BY_ID.get(id).qualityAware() ? brewLevel : LEVELLESS_BREW_LEVEL;
+	}
+
+	public static boolean isSignatureCocktail(ResourceLocation id) {
+		return SIGNATURE_COCKTAIL_ID.equals(id);
 	}
 
 	public static CGTDrinkDefinition byPath(String path) {

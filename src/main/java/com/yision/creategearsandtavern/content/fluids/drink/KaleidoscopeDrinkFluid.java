@@ -1,5 +1,6 @@
 package com.yision.creategearsandtavern.content.fluids.drink;
 
+import com.github.ysbbbbbb.kaleidoscopetavern.init.ModDataComponents;
 import com.simibubi.create.AllFluids.TintedFluidType;
 import com.simibubi.create.content.fluids.VirtualFluid;
 import com.yision.creategearsandtavern.registry.CGTDataComponents;
@@ -43,6 +44,18 @@ public class KaleidoscopeDrinkFluid extends VirtualFluid {
         return CGTDrinkCatalog.byPath(path).drinkId();
     }
 
+    public static int tintColor(FluidStack stack) {
+        KaleidoscopeDrinkVariant variant = variant(stack);
+        if (CGTDrinkCatalog.isSignatureCocktail(variant.drinkId())) {
+            Integer signatureColor = stack.get(ModDataComponents.SIGNATURE_COCKTAIL_COLOR.get());
+            if (signatureColor != null) {
+                return 0xff000000 | signatureColor;
+            }
+            return 0xff000000 | variant.definition().color();
+        }
+        return tintColor(variant);
+    }
+
     public static int tintColor(KaleidoscopeDrinkVariant variant) {
         int baseColor = variant.definition().color();
         if (variant.brewLevel() <= 0) {
@@ -65,7 +78,7 @@ public class KaleidoscopeDrinkFluid extends VirtualFluid {
         public Component getDescription(FluidStack stack) {
             KaleidoscopeDrinkVariant variant = KaleidoscopeDrinkFluid.variant(stack);
             Component drinkName = Component.translatable(variant.definition().translationKey());
-            if (variant.brewLevel() <= 0) {
+            if (!variant.definition().qualityAware() || variant.brewLevel() <= 0) {
                 return drinkName;
             }
             return Component.translatable(QUALITY_NAME_TRANSLATION_KEY, Component.translatable(variant.qualityTranslationKey()), drinkName);
@@ -73,7 +86,7 @@ public class KaleidoscopeDrinkFluid extends VirtualFluid {
 
         @Override
         protected int getTintColor(FluidStack stack) {
-            return KaleidoscopeDrinkFluid.tintColor(KaleidoscopeDrinkFluid.variant(stack));
+            return KaleidoscopeDrinkFluid.tintColor(stack);
         }
 
         @Override

@@ -1,6 +1,5 @@
 package com.yision.creategearsandtavern.datagen.recipe;
 
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -32,17 +31,29 @@ public class CGTFillingRecipeGen extends FillingRecipeGen {
                 continue;
             }
             Item drinkItem = drinkItemOpt.get();
-            if (CGTDrinkCatalog.hasSingleVariant(drinkId)) {
+
+            if (definition.servingKind() == CGTDrinkDefinition.ServingKind.COCKTAIL_GLASS) {
+                if (definition.transferMode() == CGTDrinkDefinition.TransferMode.COMPONENT_AWARE) {
+                    continue;
+                }
+                create(drinkId.getPath(), b -> {
+                    b.require(ModItems.EMPTY_GLASSWARE.get())
+                        .require(new SizedFluidIngredient(DataComponentFluidIngredient.of(false,
+                            CGTFluids.of(drinkId, CGTDrinkCatalog.COCKTAIL_AMOUNT, CGTDrinkCatalog.LEVELLESS_BREW_LEVEL)), CGTDrinkCatalog.COCKTAIL_AMOUNT))
+                        .output(new ItemStack(drinkItem));
+                    CGTDrinkRecipeGenHelper.applyConditions(b, definition, drinkId);
+                    return b;
+                });
+                continue;
+            }
+
+            if (!definition.qualityAware()) {
                 create(drinkId.getPath() + "_bottle", b -> {
                     b.require(ModItems.EMPTY_BOTTLE.get())
                         .require(new SizedFluidIngredient(DataComponentFluidIngredient.of(false,
                             CGTFluids.of(drinkId, 250, CGTDrinkCatalog.normalizedBrewLevel(drinkId, IBarrel.BREWING_STARTED))), 250))
                         .output(new ItemStack(drinkItem));
-                    definition.requiredMods().stream()
-                        .sorted(Comparator
-                            .comparing((String mod) -> !mod.equals(drinkId.getNamespace()))
-                            .thenComparing(mod -> mod))
-                        .forEach(b::whenModLoaded);
+                    CGTDrinkRecipeGenHelper.applyConditions(b, definition, drinkId);
                     return b;
                 });
                 continue;
@@ -53,11 +64,7 @@ public class CGTFillingRecipeGen extends FillingRecipeGen {
                     b.require(ModItems.EMPTY_BOTTLE.get())
                         .require(new SizedFluidIngredient(DataComponentFluidIngredient.of(false, CGTFluids.of(drinkId, 250, finalLevel)), 250))
                         .output(CGTDrinkRecipeGenHelper.bottleWithBrewLevel(drinkItem, finalLevel));
-                    definition.requiredMods().stream()
-                        .sorted(Comparator
-                            .comparing((String mod) -> !mod.equals(drinkId.getNamespace()))
-                            .thenComparing(mod -> mod))
-                        .forEach(b::whenModLoaded);
+                    CGTDrinkRecipeGenHelper.applyConditions(b, definition, drinkId);
                     return b;
                 });
             }
