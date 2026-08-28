@@ -2,7 +2,9 @@ package com.yision.creategearsandtavern.compat.kaleidoscope;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarCabinetBlockEntity;
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarrelBlockEntity;
+import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.mixology.ShakerBlockEntity;
 import com.yision.creategearsandtavern.compat.kaleidoscope.cabinet.BarCabinetLineItemHandler;
+import com.yision.creategearsandtavern.compat.kaleidoscope.shaker.CGTKaleidoscopeShakerFluids;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -40,6 +42,11 @@ public class CGTBlockEntityCapabilities {
                 ResourceLocation.tryBuild("creategearsandtavern", "cabinet_handler"),
                 provider
             );
+            event.addListener(provider::invalidate);
+        } else if (be instanceof ShakerBlockEntity shaker) {
+            FluidCapabilityProvider provider = new FluidCapabilityProvider(
+                CGTKaleidoscopeShakerFluids.createBlockHandler(shaker));
+            event.addCapability(ResourceLocation.tryBuild("creategearsandtavern", "shaker_fluid"), provider);
             event.addListener(provider::invalidate);
         }
     }
@@ -273,6 +280,34 @@ public class CGTBlockEntityCapabilities {
         private void invalidate() {
             itemHandler.invalidate();
             itemHandler = LazyOptional.empty();
+        }
+    }
+
+    private static final class FluidCapabilityProvider implements ICapabilitySerializable<CompoundTag> {
+        private final IFluidHandler fluidHandler;
+        private final LazyOptional<IFluidHandler> lazyHandler;
+
+        private FluidCapabilityProvider(IFluidHandler fluidHandler) {
+            this.fluidHandler = fluidHandler;
+            this.lazyHandler = LazyOptional.of(() -> fluidHandler);
+        }
+
+        @Override
+        public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+            return cap == ForgeCapabilities.FLUID_HANDLER ? lazyHandler.cast() : LazyOptional.empty();
+        }
+
+        @Override
+        public CompoundTag serializeNBT() {
+            return new CompoundTag();
+        }
+
+        @Override
+        public void deserializeNBT(CompoundTag nbt) {
+        }
+
+        private void invalidate() {
+            lazyHandler.invalidate();
         }
     }
 }

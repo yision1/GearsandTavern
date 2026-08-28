@@ -10,8 +10,10 @@ import com.yision.creategearsandtavern.compat.kaleidoscope.CGTItemCapabilities;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTKaleidoscopeBarrelFluids;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTKaleidoscopeSchematicRequirements;
 import com.yision.creategearsandtavern.compat.kaleidoscope.cabinet.CGTKaleidoscopeBarCabinets;
+import com.yision.creategearsandtavern.compat.kaleidoscope.shaker.CGTShakerInteractionEvents;
 import com.yision.creategearsandtavern.datagen.DataGenerators;
 import com.yision.creategearsandtavern.registry.CGTFluids;
+import com.yision.creategearsandtavern.registry.CGTRecipeSerializers;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -33,10 +35,12 @@ public class CreateGearsandTavern {
         CreateGearsAndTavernRegistrate.registrate().registerEventListeners(modEventBus);
 
         CGTFluids.register();
+        CGTRecipeSerializers.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, this::onAttachItemStackCapabilities);
         MinecraftForge.EVENT_BUS.addGenericListener(BlockEntity.class, this::onAttachBlockEntityCapabilities);
         MinecraftForge.EVENT_BUS.addListener(CGTExtraDrinkEffectReloadListener::onAddReloadListenerEvent);
+        MinecraftForge.EVENT_BUS.register(CGTShakerInteractionEvents.class);
 
         modEventBus.addListener(this::onFMLCommonSetup);
         modEventBus.addListener(DataGenerators::gatherData);

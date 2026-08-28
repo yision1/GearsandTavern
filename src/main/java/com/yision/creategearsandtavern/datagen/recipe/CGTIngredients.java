@@ -1,6 +1,7 @@
 package com.yision.creategearsandtavern.datagen.recipe;
 
 import com.yision.creategearsandtavern.CreateGearsandTavern;
+import com.yision.creategearsandtavern.compat.kaleidoscope.shaker.ReadyShakerIngredient;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -19,6 +20,8 @@ public class CGTIngredients {
     public static void register(RegisterEvent event) {
         if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS)) {
             CraftingHelper.register(BREW_LEVEL_INGREDIENT_ID, BrewLevelIngredient.SERIALIZER);
+            CraftingHelper.register(new ResourceLocation(CreateGearsandTavern.MOD_ID, "ready_shaker"),
+                ReadyShakerIngredient.SERIALIZER);
         }
     }
 }

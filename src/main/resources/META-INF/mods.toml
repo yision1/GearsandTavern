@@ -59,9 +59,9 @@ ordering="AFTER"
 side="BOTH"
 
 [[dependencies.${mod_id}]]
-modId="smc"
+modId="kaleidoscope_dim_wine"
 mandatory=false
-versionRange="[1.1.1,)"
+versionRange="[1.0.2,)"
 ordering="AFTER"
 side="BOTH"
 
@@ -73,29 +73,8 @@ ordering="AFTER"
 side="BOTH"
 
 [[dependencies.${mod_id}]]
-modId="fruitsdelight"
-mandatory=false
-versionRange="[1.1.2,)"
-ordering="AFTER"
-side="BOTH"
-
-[[dependencies.${mod_id}]]
-modId="farmersdelight"
-mandatory=false
-versionRange="[1.20.1-1.2.7,)"
-ordering="AFTER"
-side="BOTH"
-
-[[dependencies.${mod_id}]]
 modId="kaleidoscope_bloodwine"
 mandatory=false
-versionRange="[1.0.0,)"
-ordering="AFTER"
-side="BOTH"
-
-[[dependencies.${mod_id}]]
-modId="fluid"
-mandatory=false
-versionRange="[9.9.9,)"
+versionRange="[1.1.0,)"
 ordering="AFTER"
 side="BOTH"

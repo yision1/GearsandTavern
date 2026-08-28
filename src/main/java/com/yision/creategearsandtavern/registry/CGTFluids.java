@@ -1,10 +1,13 @@
 package com.yision.creategearsandtavern.registry;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.github.ysbbbbbb.kaleidoscopetavern.datamap.data.DrinkEffectData;
+import com.mojang.serialization.Codec;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.util.entry.FluidEntry;
 import com.yision.creategearsandtavern.CreateGearsAndTavernRegistrate;
@@ -16,11 +19,17 @@ import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkTyp
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkVariant;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fml.ModList;
 
 public class CGTFluids {
+	private static final String SIGNATURE_EFFECTS_TAG = "SignatureCocktailEffects";
+	private static final String SIGNATURE_COLOR_TAG = "SignatureCocktailColor";
+	private static final Codec<List<DrinkEffectData.Entry>> SIGNATURE_EFFECTS_CODEC =
+		Codec.list(DrinkEffectData.Entry.ENTRY_CODEC);
     private static final CreateRegistrate REGISTRATE = CreateGearsAndTavernRegistrate.registrate();
     private static final ResourceLocation POTION_STILL = new ResourceLocation("create", "fluid/potion_still");
     private static final ResourceLocation POTION_FLOW = new ResourceLocation("create", "fluid/potion_flow");
@@ -81,9 +90,36 @@ public class CGTFluids {
         return fluidStack;
     }
 
-    public static FluidStack bucketOf(KaleidoscopeDrinkType drinkType) {
+	public static FluidStack bucketOf(KaleidoscopeDrinkType drinkType) {
         return of(drinkType, FluidType.BUCKET_VOLUME, 1);
-    }
+	}
+
+	public static FluidStack signatureCocktailStack(int amount, List<DrinkEffectData.Entry> effects, int color) {
+		FluidStack stack = of(CGTDrinkCatalog.SIGNATURE_COCKTAIL_ID, amount,
+			CGTDrinkCatalog.LEVELLESS_BREW_LEVEL);
+		CompoundTag tag = stack.getOrCreateTag();
+		SIGNATURE_EFFECTS_CODEC.encodeStart(NbtOps.INSTANCE, effects)
+			.result()
+			.ifPresent(encoded -> tag.put(SIGNATURE_EFFECTS_TAG, encoded));
+		tag.putInt(SIGNATURE_COLOR_TAG, color);
+		return stack;
+	}
+
+	public static List<DrinkEffectData.Entry> signatureCocktailEffects(FluidStack stack) {
+		if (stack == null || !stack.hasTag() || !stack.getTag().contains(SIGNATURE_EFFECTS_TAG)) {
+			return List.of();
+		}
+		return SIGNATURE_EFFECTS_CODEC.decode(NbtOps.INSTANCE, stack.getTag().get(SIGNATURE_EFFECTS_TAG))
+			.result()
+			.map(pair -> pair.getFirst())
+			.orElse(List.of());
+	}
+
+	public static int signatureCocktailColor(FluidStack stack) {
+		return stack != null && stack.hasTag() && stack.getTag().contains(SIGNATURE_COLOR_TAG)
+			? stack.getTag().getInt(SIGNATURE_COLOR_TAG)
+			: CGTDrinkCatalog.SIGNATURE_COCKTAIL_DEFAULT_COLOR;
+	}
 
     public static FluidEntry<KaleidoscopeDrinkFluid> entry(KaleidoscopeDrinkType drinkType) {
         switch (drinkType) {

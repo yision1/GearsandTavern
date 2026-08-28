@@ -1,0 +1,17 @@
+{
+  "type": "creategearsandtavern:signature_cocktail_filling",
+  "ingredients": [
+    {
+      "item": "kaleidoscope_tavern:empty_glassware"
+    },
+    {
+      "fluid": "creategearsandtavern:signature_cocktail",
+      "amount": 250
+    }
+  ],
+  "results": [
+    {
+      "item": "kaleidoscope_tavern:signature_cocktail"
+    }
+  ]
+}

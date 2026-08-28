@@ -10,7 +10,11 @@ import net.minecraft.resources.ResourceLocation;
 
 public final class CGTDrinkCatalog {
 	private static final ResourceLocation MOLOTOV_ID = new ResourceLocation("kaleidoscope_tavern", "molotov");
+	public static final ResourceLocation SIGNATURE_COCKTAIL_ID =
+		new ResourceLocation("creategearsandtavern", "signature_cocktail");
 	public static final int LEVELLESS_BREW_LEVEL = 0;
+	public static final int COCKTAIL_AMOUNT = 250;
+	public static final int SIGNATURE_COCKTAIL_DEFAULT_COLOR = 0x5555ff;
 
 	private static final List<CGTDrinkDefinition> DEFINITIONS = List.of(
 
@@ -727,6 +731,12 @@ public final class CGTDrinkCatalog {
 			"block.kaleidoscope_fruit_brew.tequila",
 			0x518276,
 			List.of("kaleidoscope_fruit_brew", "fruitsdelight", "farmersdelight")
+		),
+		new CGTDrinkDefinition(
+			SIGNATURE_COCKTAIL_ID,
+			"block.kaleidoscope_tavern.signature_cocktail",
+			SIGNATURE_COCKTAIL_DEFAULT_COLOR,
+			List.of("kaleidoscope_tavern")
 		)
 	);
 
@@ -763,6 +773,10 @@ public final class CGTDrinkCatalog {
 
 	public static boolean hasSingleVariant(ResourceLocation id) {
 		return MOLOTOV_ID.equals(id);
+	}
+
+	public static boolean isSignatureCocktail(ResourceLocation id) {
+		return SIGNATURE_COCKTAIL_ID.equals(id);
 	}
 
 	public static int normalizedBrewLevel(ResourceLocation id, int brewLevel) {

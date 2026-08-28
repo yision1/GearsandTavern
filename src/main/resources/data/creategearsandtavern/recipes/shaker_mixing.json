@@ -1,0 +1,10 @@
+{
+  "type": "creategearsandtavern:shaker_mixing",
+  "ingredients": [
+    {
+      "type": "creategearsandtavern:ready_shaker"
+    }
+  ],
+  "results": [],
+  "processingTime": 614
+}

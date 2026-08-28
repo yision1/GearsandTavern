@@ -19,9 +19,11 @@ base {
     archivesName = mod_id
 }
 
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
+if (!isDataRunRequested) {
+    mixin {
+        add sourceSets.main, "${mod_id}.refmap.json"
+        config "${mod_id}.mixins.json"
+    }
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -42,7 +44,9 @@ minecraft {
 
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            arg "-mixin.config=${mod_id}.mixins.json"
+            if (!isDataRunRequested) {
+                arg "-mixin.config=${mod_id}.mixins.json"
+            }
 
             mods {
                 "${mod_id}" {
@@ -128,7 +132,8 @@ configurations {
 }
 
 def localCompileCompatSpecs = [
-    [name: 'compat-kaleidoscope-fruit-brew', version: '1.0.1', pattern: 'kaleidoscope_fruit_brew_forge_1.20.1-1.0.1.jar'],
+    [name: 'compat-kaleidoscope-tavern', version: '1.2.0', pattern: 'kaleidoscopetavern-1.2.0-forge+mc1.20.1.jar'],
+    [name: 'compat-kaleidoscope-fruit-brew', version: '1.0.2', pattern: 'kaleidoscope_fruit_brew_forge_1.20.1-1.0.2.jar'],
     [name: 'compat-fruitsdelight', version: '1.1.2', pattern: '*fruitsdelight*.jar'],
     [name: 'compat-farmersdelight', version: '1.20.1-1.3.2', pattern: '*FarmersDelight*.jar']
 ]
@@ -231,7 +236,20 @@ def prepareLocalCompileCompatRepoFiles = {
     }
 }
 
+// ForgeGradle resolves deobfuscated flatDir artifacts before task actions run.
 prepareLocalCompileCompatRepoFiles()
+
+def prepareLocalCompileCompatRepo = tasks.register('prepareLocalCompileCompatRepo') {
+    inputs.files(localCompileCompatSpecs.collect { spec ->
+        project.fileTree('run-data/mods') {
+            include spec.pattern
+        }
+    })
+    outputs.dir(localCompileCompatRepoDir)
+    doLast {
+        prepareLocalCompileCompatRepoFiles()
+    }
+}
 
 def prepareDatagenCompatRepoFiles = {
     delete(datagenCompatRepoDir)
@@ -313,14 +331,14 @@ dependencies {
 
     compileOnly fg.deobf("maven.modrinth:jade:${jade_version}")
 
-    compileOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
-    runtimeOnly fg.deobf("curse.maven:kaleidoscope-tavern-1475175:${kaleidoscope_tavern_file_id}")
+    compileOnly fg.deobf("local.mods:compat-kaleidoscope-tavern:1.2.0")
+    runtimeOnly fg.deobf("local.mods:compat-kaleidoscope-tavern:1.2.0")
 
     compileOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
 
-    compileOnly fg.deobf("local.mods:kaleidoscope_bloodwine:1.0.2")
+    compileOnly fg.deobf("local.mods:kaleidoscope_bloodwine:1.1.0")
 
-    compileOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.1")
+    compileOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.2")
     compileOnly fg.deobf("local.mods:compat-fruitsdelight:1.1.2")
     compileOnly fg.deobf("local.mods:compat-farmersdelight:1.20.1-1.3.2")
     datagenCuisineDelight "curse.maven:cuisine-delight-893541:7732672"
@@ -331,12 +349,20 @@ dependencies {
             runtimeOnly fg.deobf(dependencies.create(group: compatMod.group, name: compatMod.name, version: compatMod.version))
         }
         runtimeOnly fg.deobf("curse.maven:kaleidoscope-dimensions-wine-1506363:${kaleidoscope_dim_wine_file_id}")
-        runtimeOnly fg.deobf("local.mods:kaleidoscope_bloodwine:1.0.2")
-        runtimeOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.1")
+        runtimeOnly fg.deobf("local.mods:kaleidoscope_bloodwine:1.1.0")
+        runtimeOnly fg.deobf("local.mods:compat-kaleidoscope-fruit-brew:1.0.2")
         runtimeOnly fg.deobf("local.mods:kaleidoscope_world_liquor:1.1.4-forge+mc1.20.1-all")
+        runtimeOnly files(project.file('run-data/mods/curios-forge-5.9.1+1.20.1.jar'))
     }
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+if (isDataRunRequested) {
+    gradle.projectsEvaluated {
+        // Datagen-only artifacts must exist before ForgeGradle resolves runtime mappings.
+        prepareDatagenCompatRepoFiles()
+    }
 }
 
 tasks.matching { it.name == 'runData' }.configureEach {
@@ -345,6 +371,10 @@ tasks.matching { it.name == 'runData' }.configureEach {
 
 tasks.named('processResources', ProcessResources).configure {
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    dependsOn tasks.named('compileJava')
+    from(layout.buildDirectory.dir('tmp/compileJava')) {
+        include "${mod_id}.refmap.json"
+    }
 
     var replaceProperties = [
             minecraft_version                : minecraft_version,
@@ -388,6 +418,7 @@ tasks.named('jar', Jar).configure {
 }
 
 tasks.withType(JavaCompile).configureEach {
+    dependsOn prepareLocalCompileCompatRepo
     if (isDataRunRequested) {
         dependsOn prepareDatagenCompatRepo
     }

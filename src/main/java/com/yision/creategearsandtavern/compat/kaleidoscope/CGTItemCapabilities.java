@@ -10,6 +10,8 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import com.yision.creategearsandtavern.compat.kaleidoscope.cocktail.CocktailItemFluidHandlers;
+import com.yision.creategearsandtavern.compat.kaleidoscope.shaker.CGTKaleidoscopeShakerFluids;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +23,12 @@ public class CGTItemCapabilities {
             return;
         }
         IFluidHandlerItem handler = CGTItems.createFluidHandler(stack);
+        if (handler == null) {
+            handler = CGTKaleidoscopeShakerFluids.createItemHandler(stack);
+        }
+        if (handler == null) {
+            handler = CocktailItemFluidHandlers.create(stack);
+        }
         if (handler != null) {
             DrinkFluidCapabilityProvider provider = new DrinkFluidCapabilityProvider(handler);
             event.addCapability(ResourceLocation.tryBuild("creategearsandtavern", "drink_fluid"), provider);
