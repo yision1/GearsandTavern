@@ -12,6 +12,8 @@ import com.github.ysbbbbbb.kaleidoscopetavern.init.ModRecipes;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.BottleBlockItem;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.ShakerItem;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.SignatureCocktailBlockItem;
+import com.github.ysbbbbbb.kaleidoscopetavern.util.CocktailEffectHelper;
+import com.github.ysbbbbbb.kaleidoscopetavern.util.ColorUtils;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.fluids.transfer.EmptyingRecipe;
 import com.simibubi.create.content.fluids.transfer.FillingRecipe;
@@ -20,10 +22,11 @@ import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import com.yision.creategearsandtavern.CreateGearsandTavern;
 import com.yision.creategearsandtavern.compat.kaleidoscope.cocktail.CocktailFluidConversions;
 import com.yision.creategearsandtavern.compat.kaleidoscope.shaker.CGTShakerMixingRecipe;
-import com.yision.creategearsandtavern.compat.kaleidoscope.shaker.ShakerMixing;
+import com.yision.creategearsandtavern.compat.kaleidoscope.shaker.ShakerIngredientConversions;
 import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkCatalog;
 import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkDefinition;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkFluid;
+import com.yision.creategearsandtavern.registry.CGTDataComponents;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -110,33 +113,35 @@ public final class CGTJeiPlugin implements IModPlugin {
         RecipeManager recipeManager = level.getRecipeManager();
         List<RecipeHolder<ShakerRecipe>> ktRecipes = recipeManager.getAllRecipesFor(ModRecipes.SHAKER_RECIPE);
         List<ItemStack> displayInputs = new ArrayList<>();
-        List<ItemStack> allCandidates = new ArrayList<>();
+        List<ItemStack> displayOutputs = new ArrayList<>();
 
         for (RecipeHolder<ShakerRecipe> holder : ktRecipes) {
-            List<ItemStack> inputs = createInputVariants(holder.value());
-            addUniqueShakers(displayInputs, inputs);
-            addUnique(allCandidates, inputs.stream()
-                .flatMap(stack -> storageItems(stack).stream())
-                .toList());
-        }
-
-        findSignatureInput(level, ktRecipes, allCandidates)
-            .filter(signature -> displayInputs.stream().noneMatch(existing -> sameStorage(existing, signature)))
-            .ifPresent(displayInputs::add);
-
-        List<ItemStack> pairedInputs = new ArrayList<>();
-        List<ItemStack> pairedOutputs = new ArrayList<>();
-        for (ItemStack input : displayInputs) {
-            ItemStack output = ShakerMixing.mix(input, recipeManager, level.registryAccess());
-            if (output != null && !output.isEmpty()) {
-                pairedInputs.add(input);
-                pairedOutputs.add(output);
+            Optional<List<ItemStack>> representative = getRepresentativeBottles(holder.value());
+            if (representative.isEmpty()) {
+                continue;
             }
+
+            List<ItemStack> bottles = representative.get();
+            ItemStack cocktail = holder.value().assemble(new SimpleInput(bottles), level.registryAccess());
+            if (cocktail.isEmpty()) {
+                continue;
+            }
+
+            ItemStack input = createShaker(bottles);
+            displayInputs.add(input);
+            displayOutputs.add(createReadyShaker(input, cocktail));
         }
-        if (pairedInputs.isEmpty()) {
+
+        createSignatureInput(level, ktRecipes)
+            .ifPresent(input -> {
+                displayInputs.add(input);
+                displayOutputs.add(createReadyShaker(input, createSignatureCocktail(input)));
+            });
+
+        if (displayInputs.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new CGTShakerJeiRecipe(pairedInputs, pairedOutputs));
+        return Optional.of(new CGTShakerJeiRecipe(displayInputs, displayOutputs));
     }
 
     private static RecipeHolder<EmptyingRecipe> createSignatureEmptyingRecipe() {
@@ -159,60 +164,40 @@ public final class CGTJeiPlugin implements IModPlugin {
         return cocktail;
     }
 
-    private static List<ItemStack> createInputVariants(ShakerRecipe recipe) {
-        List<List<ItemStack>> choices = new ArrayList<>();
+    private static Optional<List<ItemStack>> getRepresentativeBottles(ShakerRecipe recipe) {
+        List<ItemStack> bottles = new ArrayList<>(ShakerIngredientConversions.INPUT_SLOTS);
         for (Ingredient ingredient : recipe.getIngredients()) {
             if (ingredient.isEmpty()) {
                 continue;
             }
-            List<ItemStack> candidates = Arrays.stream(ingredient.getItems())
+
+            Optional<ItemStack> representative = Arrays.stream(ingredient.getItems())
                 .map(CGTJeiPlugin::minimumQuality)
                 .filter(BottleBlockItem::isValidForShaker)
-                .toList();
-            if (candidates.isEmpty()) {
-                return List.of();
+                .findFirst();
+            if (representative.isEmpty()) {
+                return Optional.empty();
             }
-            choices.add(candidates);
+            bottles.add(representative.get());
         }
-        if (choices.size() != 3) {
-            return List.of();
+        if (bottles.size() != ShakerIngredientConversions.INPUT_SLOTS) {
+            return Optional.empty();
         }
-        List<ItemStack> variants = new ArrayList<>();
-        collectVariants(choices, 0, new ArrayList<>(), variants);
-        return variants;
+        return Optional.of(List.copyOf(bottles));
     }
 
-    private static void collectVariants(List<List<ItemStack>> choices, int index,
-                                        List<ItemStack> selected, List<ItemStack> variants) {
-        if (index == choices.size()) {
-            ItemStack shaker = createShaker(selected);
-            if (variants.stream().noneMatch(existing -> sameStorage(existing, shaker))) {
-                variants.add(shaker);
-            }
-            return;
+    private static Optional<ItemStack> createSignatureInput(
+        ClientLevel level, List<RecipeHolder<ShakerRecipe>> ktRecipes) {
+        List<ItemStack> bottles = List.of(
+            minimumQuality(new ItemStack(ModItems.PLUM_WINE.get())),
+            minimumQuality(new ItemStack(ModItems.LUMINOUS_BRIDE.get())),
+            minimumQuality(new ItemStack(ModItems.ICE_WINE.get()))
+        );
+        SimpleInput input = new SimpleInput(bottles);
+        if (ktRecipes.stream().anyMatch(holder -> holder.value().matches(input, level))) {
+            return Optional.empty();
         }
-        for (ItemStack choice : choices.get(index)) {
-            selected.add(choice);
-            collectVariants(choices, index + 1, selected, variants);
-            selected.removeLast();
-        }
-    }
-
-    private static Optional<ItemStack> findSignatureInput(
-        ClientLevel level, List<RecipeHolder<ShakerRecipe>> ktRecipes, List<ItemStack> candidates) {
-        for (int first = 0; first < candidates.size(); first++) {
-            for (int second = first; second < candidates.size(); second++) {
-                for (int third = second; third < candidates.size(); third++) {
-                    ItemStack shaker = createShaker(List.of(
-                        candidates.get(first), candidates.get(second), candidates.get(third)));
-                    SimpleInput input = new SimpleInput(storageItems(shaker));
-                    if (ktRecipes.stream().noneMatch(holder -> holder.value().matches(input, level))) {
-                        return Optional.of(shaker);
-                    }
-                }
-            }
-        }
-        return Optional.empty();
+        return Optional.of(createShaker(bottles));
     }
 
     private static ItemStack minimumQuality(ItemStack original) {
@@ -225,7 +210,7 @@ public final class CGTJeiPlugin implements IModPlugin {
 
     private static ItemStack createShaker(List<ItemStack> ingredients) {
         ItemStack shaker = new ItemStack(ModItems.SHAKER.get());
-        ItemStackHandler storage = new ItemStackHandler(3);
+        ItemStackHandler storage = new ItemStackHandler(ShakerIngredientConversions.INPUT_SLOTS);
         for (int i = 0; i < Math.min(storage.getSlots(), ingredients.size()); i++) {
             storage.setStackInSlot(i, ingredients.get(i).copyWithCount(1));
         }
@@ -233,54 +218,20 @@ public final class CGTJeiPlugin implements IModPlugin {
         return shaker;
     }
 
-    private static List<ItemStack> storageItems(ItemStack shaker) {
-        ItemStackHandler storage = ShakerItem.getStorage(shaker);
-        List<ItemStack> items = new ArrayList<>();
-        for (int i = 0; i < storage.getSlots(); i++) {
-            if (!storage.getStackInSlot(i).isEmpty()) {
-                items.add(storage.getStackInSlot(i).copy());
-            }
-        }
-        return items;
+    private static ItemStack createReadyShaker(ItemStack input, ItemStack cocktail) {
+        ItemStack output = input.copy();
+        ItemStack result = cocktail.copy();
+        result.set(CGTDataComponents.SHAKER_COCKTAIL_AMOUNT, ShakerIngredientConversions.SLOT_AMOUNT);
+        ShakerItem.setResult(output, result);
+        return output;
     }
 
-    private static boolean sameStorage(ItemStack first, ItemStack second) {
-        List<ItemStack> firstItems = storageItems(first);
-        List<ItemStack> secondItems = storageItems(second);
-        if (firstItems.size() != secondItems.size()) {
-            return false;
-        }
-        boolean[] matched = new boolean[secondItems.size()];
-        for (ItemStack firstItem : firstItems) {
-            boolean found = false;
-            for (int i = 0; i < secondItems.size(); i++) {
-                if (!matched[i] && ItemStack.isSameItemSameComponents(firstItem, secondItems.get(i))) {
-                    matched[i] = true;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static void addUnique(List<ItemStack> target, List<ItemStack> candidates) {
-        for (ItemStack candidate : candidates) {
-            if (target.stream().noneMatch(existing -> ItemStack.isSameItemSameComponents(existing, candidate))) {
-                target.add(candidate.copy());
-            }
-        }
-    }
-
-    private static void addUniqueShakers(List<ItemStack> target, List<ItemStack> candidates) {
-        for (ItemStack candidate : candidates) {
-            if (target.stream().noneMatch(existing -> sameStorage(existing, candidate))) {
-                target.add(candidate.copy());
-            }
-        }
+    private static ItemStack createSignatureCocktail(ItemStack input) {
+        ItemStack cocktail = new ItemStack(ModItems.SIGNATURE_COCKTAIL.get());
+        CocktailEffectHelper.CollectedData data = CocktailEffectHelper.collectFromStorage(ShakerItem.getStorage(input));
+        SignatureCocktailBlockItem.setEffects(cocktail, CocktailEffectHelper.mergeEffects(data.effects()));
+        SignatureCocktailBlockItem.setColor(cocktail, ColorUtils.mixColors(data.colors()));
+        return cocktail;
     }
 
     private static boolean isSignatureFluid(FluidStack stack) {
