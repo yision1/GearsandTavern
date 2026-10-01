@@ -1,6 +1,7 @@
 package com.yision.creategearsandtavern.compat.kaleidoscope.cabinet;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BarCabinetBlock;
+import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.CellarCabinetBlock;
 import com.simibubi.create.api.packager.InventoryIdentifier;
 
 import net.minecraft.core.BlockPos;
@@ -18,13 +19,22 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 public class CGTKaleidoscopeBarCabinets {
     private static final ResourceLocation BAR_CABINET_BE_ID =
         ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "bar_cabinet");
+    private static final ResourceLocation CELLAR_CABINET_BE_ID =
+        ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "cellar_cabinet");
     private static final ResourceLocation BAR_CABINET_BLOCK_ID =
         ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "bar_cabinet");
     private static final ResourceLocation GLASS_BAR_CABINET_BLOCK_ID =
         ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "glass_bar_cabinet");
+    private static final ResourceLocation CELLAR_CABINET_BLOCK_ID =
+        ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "cellar_cabinet");
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        BlockEntityType<?> cabinetType = BuiltInRegistries.BLOCK_ENTITY_TYPE.get(BAR_CABINET_BE_ID);
+        registerCapability(event, BAR_CABINET_BE_ID);
+        registerCapability(event, CELLAR_CABINET_BE_ID);
+    }
+
+    private static void registerCapability(RegisterCapabilitiesEvent event, ResourceLocation id) {
+        BlockEntityType<?> cabinetType = BuiltInRegistries.BLOCK_ENTITY_TYPE.get(id);
         if (cabinetType == null) {
             return;
         }
@@ -38,6 +48,7 @@ public class CGTKaleidoscopeBarCabinets {
     public static void registerCreateCompat() {
         registerInventoryIdentifier(BuiltInRegistries.BLOCK.get(BAR_CABINET_BLOCK_ID));
         registerInventoryIdentifier(BuiltInRegistries.BLOCK.get(GLASS_BAR_CABINET_BLOCK_ID));
+        registerInventoryIdentifier(BuiltInRegistries.BLOCK.get(CELLAR_CABINET_BLOCK_ID));
     }
 
     private static void registerInventoryIdentifier(Block block) {
@@ -45,7 +56,8 @@ public class CGTKaleidoscopeBarCabinets {
             return;
         }
         InventoryIdentifier.REGISTRY.register(block, (level, state, face) -> {
-            if (!(state.getBlock() instanceof BarCabinetBlock)) {
+            if (!(state.getBlock() instanceof BarCabinetBlock)
+                && !(state.getBlock() instanceof CellarCabinetBlock)) {
                 return null;
             }
             BarCabinetLineCache.LineView line = BarCabinetLineCache.get(level, face.getPos(), state);

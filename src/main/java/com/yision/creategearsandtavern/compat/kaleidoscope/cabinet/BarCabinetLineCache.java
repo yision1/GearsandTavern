@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BarCabinetBlock;
+import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.CellarCabinetBlock;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -85,10 +88,11 @@ public final class BarCabinetLineCache {
         Direction facing = state.getValue(BarCabinetBlock.FACING);
         Direction left = facing.getClockWise();
         Direction right = facing.getCounterClockWise();
+        Block lineBlock = state.getBlock();
 
         BlockPos start = pos;
         int leftSteps = 0;
-        while (matches(level, start.relative(left), facing)) {
+        while (matches(level, start.relative(left), facing, lineBlock)) {
             if (leftSteps >= MAX_CONNECTED_CABINETS - 1) {
                 return LineView.empty();
             }
@@ -98,25 +102,29 @@ public final class BarCabinetLineCache {
 
         List<BlockPos> positions = new ArrayList<>();
         BlockPos cursor = start;
-        while (positions.size() < MAX_CONNECTED_CABINETS && matches(level, cursor, facing)) {
+        while (positions.size() < MAX_CONNECTED_CABINETS
+            && matches(level, cursor, facing, lineBlock)) {
             positions.add(cursor.immutable());
             cursor = cursor.relative(right);
         }
-        if (matches(level, cursor, facing)) {
+        if (matches(level, cursor, facing, lineBlock)) {
             return LineView.empty();
         }
 
-        return new LineView(List.copyOf(positions), facing, level.getGameTime(), hash(level, positions, facing));
+        return new LineView(List.copyOf(positions), facing, lineBlock,
+            level.getGameTime(), hash(level, positions, facing));
     }
 
-    private static boolean matches(Level level, BlockPos pos, Direction facing) {
+    private static boolean matches(Level level, BlockPos pos, Direction facing, Block lineBlock) {
         BlockState state = level.getBlockState(pos);
-        return isCabinetState(state) && state.getValue(BarCabinetBlock.FACING) == facing
+        return state.getBlock() == lineBlock
+            && state.getValue(BarCabinetBlock.FACING) == facing
             && level.getBlockEntity(pos) != null;
     }
 
     private static boolean isCabinetState(BlockState state) {
-        return state != null && state.getBlock() instanceof BarCabinetBlock
+        return state != null && (state.getBlock() instanceof BarCabinetBlock
+            || state.getBlock() instanceof CellarCabinetBlock)
             && state.hasProperty(BarCabinetBlock.FACING);
     }
 
@@ -131,8 +139,10 @@ public final class BarCabinetLineCache {
         return result;
     }
 
-    public record LineView(List<BlockPos> positions, Direction facing, long scannedAtGameTime, int structureHash) {
-        private static final LineView EMPTY = new LineView(List.of(), Direction.NORTH, -1, 0);
+    public record LineView(List<BlockPos> positions, Direction facing, Block lineBlock,
+                           long scannedAtGameTime, int structureHash) {
+        private static final LineView EMPTY =
+            new LineView(List.of(), Direction.NORTH, Blocks.AIR, -1, 0);
 
         static LineView empty() {
             return EMPTY;
@@ -142,7 +152,9 @@ public final class BarCabinetLineCache {
             if (positions.isEmpty() || !positions.contains(queriedPos)) {
                 return false;
             }
-            if (!isCabinetState(queriedState) || queriedState.getValue(BarCabinetBlock.FACING) != facing) {
+            if (!isCabinetState(queriedState)
+                || queriedState.getBlock() != lineBlock
+                || queriedState.getValue(BarCabinetBlock.FACING) != facing) {
                 return false;
             }
             if (hash(level, positions, facing) != structureHash) {
@@ -153,8 +165,8 @@ public final class BarCabinetLineCache {
             Direction right = facing.getCounterClockWise();
             BlockPos first = positions.getFirst();
             BlockPos last = positions.getLast();
-            return !matches(level, first.relative(left), facing)
-                && !matches(level, last.relative(right), facing);
+            return !matches(level, first.relative(left), facing, lineBlock)
+                && !matches(level, last.relative(right), facing, lineBlock);
         }
 
         BlockEntity blockEntityAt(Level level, int cabinetIndex) {

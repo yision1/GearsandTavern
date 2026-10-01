@@ -1,6 +1,7 @@
 package com.yision.creategearsandtavern.mixin.kaleidoscope;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BarCabinetBlock;
+import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.CellarCabinetBlock;
 import com.yision.creategearsandtavern.compat.kaleidoscope.cabinet.BarCabinetLineCache;
 
 import net.minecraft.core.BlockPos;
@@ -14,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(BarCabinetBlock.class)
+@Mixin({BarCabinetBlock.class, CellarCabinetBlock.class})
 public class BarCabinetBlockMixin {
     @Inject(method = "updateShape", at = @At("RETURN"))
     private void cgt$invalidateCabinetLineOnShapeUpdate(BlockState state, Direction direction, BlockState neighborState,
