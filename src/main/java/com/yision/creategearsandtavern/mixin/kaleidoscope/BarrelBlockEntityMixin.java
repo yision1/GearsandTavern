@@ -116,7 +116,7 @@ public class BarrelBlockEntityMixin implements KaleidoscopeBarrelProxy {
         }
 
         cgt$controllerPos = origin;
-        cgt$proxyPart = false;
+        cgt$proxyPart = !controller.getBlockPos().equals(origin);
         cgt$structureInitialized = true;
         controller.setChanged();
     }

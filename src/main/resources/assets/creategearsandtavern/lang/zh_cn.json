@@ -1,4 +1,6 @@
 {
+  "create.item_attributes.creategearsandtavern.tavern_quality": "是 %s 品质",
+  "create.item_attributes.creategearsandtavern.tavern_quality.inverted": "不是 %s 品质",
   "fluid.creategearsandtavern.kaleidoscope_drink.with_quality": "%1$s %2$s",
   "creategearsandtavern.recipe.shaker_mixing": "自动摇晃"
 }

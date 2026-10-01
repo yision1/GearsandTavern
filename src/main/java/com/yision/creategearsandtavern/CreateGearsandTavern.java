@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 import com.yision.creategearsandtavern.compat.create.arm.CGTArmInteractionPointTypes;
+import com.yision.creategearsandtavern.compat.create.filter.CGTItemAttributeTypes;
 import com.yision.creategearsandtavern.compat.jei.CGTExtraDrinkEffectReloadListener;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTBlockEntityCapabilities;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTItemCapabilities;
@@ -47,6 +48,7 @@ public class CreateGearsandTavern {
         // 动力臂交互点必须在 Create 内置 registry 冻结和 ArmInteractionPointType.init() 排序前注册，
         // 因此直接挂在 RegisterEvent 监听器里，不放进 enqueueWork。
         modEventBus.addListener(CGTArmInteractionPointTypes::register);
+        modEventBus.addListener(CGTItemAttributeTypes::register);
     }
 
     private void onAttachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event) {

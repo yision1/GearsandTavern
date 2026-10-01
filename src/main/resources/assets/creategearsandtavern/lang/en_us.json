@@ -1,4 +1,6 @@
 {
+  "create.item_attributes.creategearsandtavern.tavern_quality": "is %s quality",
+  "create.item_attributes.creategearsandtavern.tavern_quality.inverted": "is not %s quality",
   "fluid.creategearsandtavern.kaleidoscope_drink.with_quality": "%1$s %2$s",
   "creategearsandtavern.recipe.shaker_mixing": "Automatic Shaking"
 }

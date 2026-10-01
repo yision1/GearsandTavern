@@ -14,6 +14,8 @@ import com.simibubi.create.content.schematics.requirement.ItemRequirement.ItemUs
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -32,8 +34,19 @@ public final class CGTKaleidoscopeSchematicRequirements {
             CGTKaleidoscopeSchematicRequirements::barrelRequirement);
         SchematicRequirementRegistries.BLOCKS.register(ModBlocks.GRAPEVINE_TRELLIS.get(),
             CGTKaleidoscopeSchematicRequirements::grapevineTrellisRequirement);
+        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.ICE_GRAPEVINE_TRELLIS.get(),
+            CGTKaleidoscopeSchematicRequirements::grapevineTrellisRequirement);
+        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.GOLD_GRAPEVINE_TRELLIS.get(),
+            CGTKaleidoscopeSchematicRequirements::grapevineTrellisRequirement);
         SchematicRequirementRegistries.BLOCKS.register(ModBlocks.POTION_BOTTLE.get(),
             CGTKaleidoscopeSchematicRequirements::potionBottleRequirement);
+        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.WATER_BOTTLE.get(),
+            (state, blockEntity) -> new ItemRequirement(new ItemRequirement.StrictNbtStackRequirement(
+                PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER), ItemUseType.CONSUME)));
+        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.HONEY_BOTTLE.get(),
+            (state, blockEntity) -> new ItemRequirement(ItemUseType.CONSUME, Items.HONEY_BOTTLE));
+        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.DRAGON_BREATH_BOTTLE.get(),
+            (state, blockEntity) -> new ItemRequirement(ItemUseType.CONSUME, Items.DRAGON_BREATH));
         SchematicRequirementRegistries.BLOCKS.register(ModBlocks.XP_BOTTLE.get(),
             (state, blockEntity) -> new ItemRequirement(ItemUseType.CONSUME, Items.EXPERIENCE_BOTTLE));
         SafeNbtWriterRegistry.REGISTRY.register(ModBlocks.POTION_BOTTLE_BE.get(),

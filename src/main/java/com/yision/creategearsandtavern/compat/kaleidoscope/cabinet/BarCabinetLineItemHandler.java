@@ -2,6 +2,8 @@ package com.yision.creategearsandtavern.compat.kaleidoscope.cabinet;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BottleBlock;
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarCabinetBlockEntity;
+import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.CellarCabinetBlockEntity;
+import com.github.ysbbbbbb.kaleidoscopetavern.init.tag.TagMod;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.BottleBlockItem;
 
 import net.minecraft.core.Direction;
@@ -37,7 +39,7 @@ public class BarCabinetLineItemHandler implements IItemHandler {
         if (!canAccess()) {
             return 0;
         }
-        return line().positions().size() * 2;
+        return line().positions().size() * slotsPerCabinet();
     }
 
     @Override
@@ -46,11 +48,15 @@ public class BarCabinetLineItemHandler implements IItemHandler {
         if (!canAccess()) {
             return ItemStack.EMPTY;
         }
-        BarCabinetBlockEntity cabinet = cabinetForSlot(slot);
-        if (cabinet == null) {
-            return ItemStack.EMPTY;
+        int slotsPerCabinet = slotsPerCabinet();
+        BlockEntity cabinet = cabinetForSlot(slot, slotsPerCabinet);
+        if (cabinet instanceof BarCabinetBlockEntity barCabinet) {
+            return isLeftSlot(slot) ? barCabinet.getLeftItem() : barCabinet.getRightItem();
         }
-        return isLeftSlot(slot) ? cabinet.getLeftItem() : cabinet.getRightItem();
+        if (cabinet instanceof CellarCabinetBlockEntity cellarCabinet) {
+            return cellarCabinet.getItems().getStackInSlot(slot % slotsPerCabinet);
+        }
+        return ItemStack.EMPTY;
     }
 
     @Override
@@ -68,8 +74,20 @@ public class BarCabinetLineItemHandler implements IItemHandler {
             return stack;
         }
 
-        BarCabinetBlockEntity cabinet = cabinetForSlot(slot);
-        if (cabinet == null || !canInsertInto(cabinet, slot, bottle)) {
+        int slotsPerCabinet = slotsPerCabinet();
+        BlockEntity cabinet = cabinetForSlot(slot, slotsPerCabinet);
+        if (cabinet instanceof CellarCabinetBlockEntity cellarCabinet) {
+            if (stack.is(TagMod.CELLAR_CABINET_BLOCKLIST)) {
+                return stack;
+            }
+            ItemStack remainder = cellarCabinet.getItems().insertItem(slot % slotsPerCabinet, stack, simulate);
+            if (!simulate && remainder.getCount() != stack.getCount()) {
+                cellarCabinet.refresh();
+            }
+            return remainder;
+        }
+        if (!(cabinet instanceof BarCabinetBlockEntity barCabinet)
+            || !canInsertInto(barCabinet, slot, bottle)) {
             return stack;
         }
 
@@ -79,12 +97,12 @@ public class BarCabinetLineItemHandler implements IItemHandler {
 
         if (!simulate) {
             if (isLeftSlot(slot)) {
-                cabinet.setLeftItem(inserted);
+                barCabinet.setLeftItem(inserted);
             } else {
-                cabinet.setRightItem(inserted);
+                barCabinet.setRightItem(inserted);
             }
-            cabinet.setSingle(bottle.irregular());
-            cabinet.refresh();
+            barCabinet.setSingle(bottle.irregular());
+            barCabinet.refresh();
         }
 
         return remainder;
@@ -100,12 +118,20 @@ public class BarCabinetLineItemHandler implements IItemHandler {
             return ItemStack.EMPTY;
         }
 
-        BarCabinetBlockEntity cabinet = cabinetForSlot(slot);
-        if (cabinet == null) {
+        int slotsPerCabinet = slotsPerCabinet();
+        BlockEntity cabinet = cabinetForSlot(slot, slotsPerCabinet);
+        if (cabinet instanceof CellarCabinetBlockEntity cellarCabinet) {
+            ItemStack extracted = cellarCabinet.getItems().extractItem(slot % slotsPerCabinet, amount, simulate);
+            if (!simulate && !extracted.isEmpty()) {
+                cellarCabinet.refresh();
+            }
+            return extracted;
+        }
+        if (!(cabinet instanceof BarCabinetBlockEntity barCabinet)) {
             return ItemStack.EMPTY;
         }
 
-        ItemStack existing = isLeftSlot(slot) ? cabinet.getLeftItem() : cabinet.getRightItem();
+        ItemStack existing = isLeftSlot(slot) ? barCabinet.getLeftItem() : barCabinet.getRightItem();
         if (existing.isEmpty()) {
             return ItemStack.EMPTY;
         }
@@ -115,14 +141,14 @@ public class BarCabinetLineItemHandler implements IItemHandler {
         if (!simulate) {
             existing.shrink(extractedCount);
             if (existing.isEmpty() && isLeftSlot(slot)) {
-                cabinet.setLeftItem(ItemStack.EMPTY);
+                barCabinet.setLeftItem(ItemStack.EMPTY);
             } else if (existing.isEmpty()) {
-                cabinet.setRightItem(ItemStack.EMPTY);
+                barCabinet.setRightItem(ItemStack.EMPTY);
             }
-            if (cabinet.getLeftItem().isEmpty() && cabinet.getRightItem().isEmpty()) {
-                cabinet.setSingle(false);
+            if (barCabinet.getLeftItem().isEmpty() && barCabinet.getRightItem().isEmpty()) {
+                barCabinet.setSingle(false);
             }
-            cabinet.refresh();
+            barCabinet.refresh();
         }
 
         return extracted;
@@ -142,23 +168,38 @@ public class BarCabinetLineItemHandler implements IItemHandler {
         if (bottle == null) {
             return false;
         }
-        BarCabinetBlockEntity cabinet = cabinetForSlot(slot);
-        return cabinet != null && canInsertInto(cabinet, slot, bottle);
+        int slotsPerCabinet = slotsPerCabinet();
+        BlockEntity cabinet = cabinetForSlot(slot, slotsPerCabinet);
+        if (cabinet instanceof CellarCabinetBlockEntity) {
+            return !stack.is(TagMod.CELLAR_CABINET_BLOCKLIST);
+        }
+        return cabinet instanceof BarCabinetBlockEntity barCabinet
+            && canInsertInto(barCabinet, slot, bottle);
     }
 
     private BarCabinetLineCache.LineView line() {
         return BarCabinetLineCache.get(context.getLevel(), context.getBlockPos(), context.getBlockState());
     }
 
-    private BarCabinetBlockEntity cabinetForSlot(int slot) {
-        if (slot < 0) {
+    private BlockEntity cabinetForSlot(int slot, int slotsPerCabinet) {
+        if (slot < 0 || slotsPerCabinet == 0) {
             return null;
         }
-        BlockEntity be = line().blockEntityAt(context.getLevel(), slot / 2);
+        BlockEntity be = line().blockEntityAt(context.getLevel(), slot / slotsPerCabinet);
         if (be == null || be.isRemoved()) {
             return null;
         }
-        return be instanceof BarCabinetBlockEntity cabinet ? cabinet : null;
+        return be;
+    }
+
+    private int slotsPerCabinet() {
+        if (context instanceof BarCabinetBlockEntity) {
+            return 2;
+        }
+        if (context instanceof CellarCabinetBlockEntity) {
+            return 9;
+        }
+        return 0;
     }
 
     private boolean canInsertInto(BarCabinetBlockEntity cabinet, int slot, BottleBlock bottle) {

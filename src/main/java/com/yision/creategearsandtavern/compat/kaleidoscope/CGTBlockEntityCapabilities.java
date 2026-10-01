@@ -2,6 +2,7 @@ package com.yision.creategearsandtavern.compat.kaleidoscope;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarCabinetBlockEntity;
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarrelBlockEntity;
+import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.CellarCabinetBlockEntity;
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.mixology.ShakerBlockEntity;
 import com.yision.creategearsandtavern.compat.kaleidoscope.cabinet.BarCabinetLineItemHandler;
 import com.yision.creategearsandtavern.compat.kaleidoscope.shaker.CGTKaleidoscopeShakerFluids;
@@ -36,7 +37,7 @@ public class CGTBlockEntityCapabilities {
                 provider
             );
             event.addListener(provider::invalidate);
-        } else if (be instanceof BarCabinetBlockEntity) {
+        } else if (be instanceof BarCabinetBlockEntity || be instanceof CellarCabinetBlockEntity) {
             CabinetCapabilityProvider provider = new CabinetCapabilityProvider(be);
             event.addCapability(
                 ResourceLocation.tryBuild("creategearsandtavern", "cabinet_handler"),
