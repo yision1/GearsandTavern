@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 import com.yision.creategearsandtavern.compat.create.arm.CGTArmInteractionPointTypes;
+import com.yision.creategearsandtavern.compat.create.filter.CGTItemAttributeTypes;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTKaleidoscopeBarrelFluids;
 import com.yision.creategearsandtavern.compat.kaleidoscope.CGTKaleidoscopeSchematicRequirements;
 import com.yision.creategearsandtavern.compat.kaleidoscope.cabinet.CGTKaleidoscopeBarCabinets;
@@ -31,6 +32,7 @@ public class CreateGearsandTavern {
     public CreateGearsandTavern(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(DataGenerators::gatherData);
         modEventBus.addListener(CGTArmInteractionPointTypes::register);
+        modEventBus.addListener(CGTItemAttributeTypes::register);
         modEventBus.addListener(CGTItems::registerCapabilities);
         modEventBus.addListener(CGTItems::registerCapabilitiesForKdw);
         modEventBus.addListener(CGTItems::registerCapabilitiesForKt);
