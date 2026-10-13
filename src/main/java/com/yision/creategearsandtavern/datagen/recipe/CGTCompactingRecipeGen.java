@@ -18,68 +18,82 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
+
 import net.neoforged.neoforge.fluids.FluidType;
 
 public class CGTCompactingRecipeGen extends CompactingRecipeGen {
-    private static final TagKey<Item> GRAPES = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "fruits/grapes"));
-    private static final ResourceLocation TORCHBERRIES = ResourceLocation.fromNamespaceAndPath("twilightforest", "torchberries");
-    private static final ResourceLocation KT_TORCHBERRY_JUICE =
-        ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "torchberry_juice");
-    private static final int JUICE_INGREDIENT_COUNT = 8;
+	private static final TagKey<Item> GRAPES = ItemTags
+		.create(ResourceLocation.fromNamespaceAndPath("c", "fruits/grapes"));
+	private static final ResourceLocation TORCHBERRIES = ResourceLocation.fromNamespaceAndPath("twilightforest",
+		"torchberries");
+	private static final ResourceLocation KT_TORCHBERRY_JUICE = ResourceLocation
+		.fromNamespaceAndPath("kaleidoscope_twilight", "torchberry_juice");
+	private static final int JUICE_INGREDIENT_COUNT = 8;
 
-    public CGTCompactingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        super(output, registries, CreateGearsandTavern.MOD_ID);
+	public CGTCompactingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, registries, CreateGearsandTavern.MOD_ID);
 
-        createJuiceFromTag("grape_juice_from_grapes", GRAPES, ModFluids.GRAPE_JUICE.get());
-        createJuiceFromItem("sweet_berries_juice_from_sweet_berries", Items.SWEET_BERRIES, ModFluids.SWEET_BERRIES_JUICE.get());
-        createJuiceFromItem("glow_berries_juice_from_glow_berries", Items.GLOW_BERRIES, ModFluids.GLOW_BERRIES_JUICE.get());
-        createJuiceFromItem("ice_grape_juice_from_ice_grape", ModItems.ICE_GRAPE.get(), ModFluids.ICE_GRAPE_JUICE.get());
-        createJuiceFromItem("gold_grape_juice_from_gold_grape", ModItems.GOLD_GRAPE.get(), ModFluids.GOLD_GRAPE_JUICE.get());
-        createJuiceFromItem("green_grape_juice_from_green_grape", ModItems.GREEN_GRAPE.get(), ModFluids.GREEN_GRAPE_JUICE.get());
-        createKtTorchberryJuice();
-    }
+		createJuiceFromTag("grape_juice_from_grapes", GRAPES, ModFluids.GRAPE_JUICE.get());
+		createJuiceFromItem("sweet_berries_juice_from_sweet_berries", Items.SWEET_BERRIES,
+			ModFluids.SWEET_BERRIES_JUICE.get());
+		createJuiceFromItem("glow_berries_juice_from_glow_berries", Items.GLOW_BERRIES,
+			ModFluids.GLOW_BERRIES_JUICE.get());
+		createJuiceFromItem("ice_grape_juice_from_ice_grape", ModItems.ICE_GRAPE.get(),
+			ModFluids.ICE_GRAPE_JUICE.get());
+		createJuiceFromItem("gold_grape_juice_from_gold_grape", ModItems.GOLD_GRAPE.get(),
+			ModFluids.GOLD_GRAPE_JUICE.get());
+		createJuiceFromItem("green_grape_juice_from_green_grape", ModItems.GREEN_GRAPE.get(),
+			ModFluids.GREEN_GRAPE_JUICE.get());
+		createKtTorchberryJuice();
+	}
 
-    private void createJuiceFromTag(String name, TagKey<Item> ingredient, net.minecraft.world.level.material.Fluid result) {
-        create(name, b -> require(b, ingredient).output(result, FluidType.BUCKET_VOLUME));
-    }
+	private void createJuiceFromTag(String name, TagKey<Item> ingredient,
+		net.minecraft.world.level.material.Fluid result) {
+		create(name, b -> require(b, ingredient).output(result, FluidType.BUCKET_VOLUME));
+	}
 
-    private void createJuiceFromItem(String name, ItemLike ingredient, net.minecraft.world.level.material.Fluid result) {
-        create(name, b -> require(b, ingredient).output(result, FluidType.BUCKET_VOLUME));
-    }
+	private void createJuiceFromItem(String name, ItemLike ingredient,
+		net.minecraft.world.level.material.Fluid result) {
+		create(name, b -> require(b, ingredient).output(result, FluidType.BUCKET_VOLUME));
+	}
 
-    private void createKtTorchberryJuice() {
-        Optional<Item> torchberries = BuiltInRegistries.ITEM.getOptional(TORCHBERRIES);
-        Optional<Fluid> juice = BuiltInRegistries.FLUID.getOptional(KT_TORCHBERRY_JUICE);
-        if (torchberries.isEmpty() || juice.isEmpty()) {
-            return;
-        }
-        create("torchberry_juice_from_torchberries", b -> require(b, torchberries.get())
-            .output(juice.get(), FluidType.BUCKET_VOLUME)
-            .whenModLoaded("twilightforest")
-            .whenModLoaded("kaleidoscope_twilight"));
-    }
+	private void createKtTorchberryJuice() {
+		Optional<Item> torchberries = BuiltInRegistries.ITEM.getOptional(TORCHBERRIES);
+		Optional<Fluid> juice = BuiltInRegistries.FLUID.getOptional(KT_TORCHBERRY_JUICE);
+		if (torchberries.isEmpty() || juice.isEmpty()) {
+			return;
+		}
+		create("torchberry_juice_from_torchberries", b -> require(b, torchberries.get())
+			.output(juice.get(), FluidType.BUCKET_VOLUME)
+			.whenModLoaded("twilightforest")
+			.whenModLoaded("kaleidoscope_twilight"));
+	}
 
-    private static Item item(ResourceLocation id) {
-        return BuiltInRegistries.ITEM.getOptional(id)
-            .orElseThrow(() -> new IllegalStateException("Missing item for recipe generation: " + id));
-    }
+	private static Item item(ResourceLocation id) {
+		return BuiltInRegistries.ITEM.getOptional(id)
+			.orElseThrow(() -> new IllegalStateException("Missing item for recipe generation: " + id));
+	}
 
-    private static Fluid fluid(ResourceLocation id) {
-        return BuiltInRegistries.FLUID.getOptional(id)
-            .orElseThrow(() -> new IllegalStateException("Missing fluid for recipe generation: " + id));
-    }
+	private static Fluid fluid(ResourceLocation id) {
+		return BuiltInRegistries.FLUID.getOptional(id)
+			.orElseThrow(() -> new IllegalStateException("Missing fluid for recipe generation: " + id));
+	}
 
-    private static <T extends com.simibubi.create.content.processing.recipe.StandardProcessingRecipe.Builder<?>> T require(T builder, TagKey<Item> ingredient) {
-        for (int i = 0; i < JUICE_INGREDIENT_COUNT; i++) {
-            builder.require(ingredient);
-        }
-        return builder;
-    }
+	private static <T extends
+		com.simibubi.create.content.processing.recipe.StandardProcessingRecipe.Builder<?>> T require(
+		T builder, TagKey<Item> ingredient) {
+		for (int i = 0; i < JUICE_INGREDIENT_COUNT; i++) {
+			builder.require(ingredient);
+		}
+		return builder;
+	}
 
-    private static <T extends com.simibubi.create.content.processing.recipe.StandardProcessingRecipe.Builder<?>> T require(T builder, ItemLike ingredient) {
-        for (int i = 0; i < JUICE_INGREDIENT_COUNT; i++) {
-            builder.require(ingredient);
-        }
-        return builder;
-    }
+	private static <T extends
+		com.simibubi.create.content.processing.recipe.StandardProcessingRecipe.Builder<?>> T require(
+		T builder, ItemLike ingredient) {
+		for (int i = 0; i < JUICE_INGREDIENT_COUNT; i++) {
+			builder.require(ingredient);
+		}
+		return builder;
+	}
 }

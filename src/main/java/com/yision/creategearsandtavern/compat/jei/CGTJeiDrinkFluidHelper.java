@@ -22,6 +22,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluid;
+
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public final class CGTJeiDrinkFluidHelper {
@@ -91,7 +92,8 @@ public final class CGTJeiDrinkFluidHelper {
 	}
 
 	private static Component formatEffect(DrinkEffectData.Entry entry) {
-		MobEffectInstance effectInstance = new MobEffectInstance(entry.effect(), entry.duration() * 20, entry.amplifier());
+		MobEffectInstance effectInstance = new MobEffectInstance(entry.effect(), entry.duration() * 20,
+			entry.amplifier());
 		MutableComponent line = Component.translatable(entry.effect().value().getDescriptionId());
 
 		if (entry.amplifier() > 0) {

@@ -15,6 +15,7 @@ import com.yision.creategearsandtavern.compat.jei.CGTJeiDrinkFluidHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import net.minecraft.network.chat.Component;
+
 import net.neoforged.neoforge.fluids.FluidStack;
 
 @Mixin(CreateRecipeCategory.class)

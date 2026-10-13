@@ -5,6 +5,7 @@ import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPointTyp
 import com.yision.creategearsandtavern.CreateGearsandTavern;
 
 import net.minecraft.resources.ResourceLocation;
+
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 /**
@@ -24,7 +25,6 @@ public final class CGTArmInteractionPointTypes {
 	public static void register(RegisterEvent event) {
 		event.register(CreateRegistries.ARM_INTERACTION_POINT_TYPE, helper -> helper.register(
 			ResourceLocation.fromNamespaceAndPath(CreateGearsandTavern.MOD_ID, "grapevine_trellis_harvest"),
-			GRAPEVINE_TRELLIS_HARVEST
-		));
+			GRAPEVINE_TRELLIS_HARVEST));
 	}
 }

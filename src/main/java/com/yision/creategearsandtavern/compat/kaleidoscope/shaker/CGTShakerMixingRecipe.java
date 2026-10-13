@@ -15,29 +15,29 @@ import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class CGTShakerMixingRecipe extends MixingRecipe {
-    public CGTShakerMixingRecipe(ProcessingRecipeParams params) {
-        super(params);
-    }
+	public CGTShakerMixingRecipe(ProcessingRecipeParams params) {
+		super(params);
+	}
 
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return CGTRecipeSerializers.SHAKER_MIXING.get();
-    }
+	@Override
+	public RecipeSerializer<?> getSerializer() {
+		return CGTRecipeSerializers.SHAKER_MIXING.get();
+	}
 
-    @Override
-    public ItemStack getResultItem(HolderLookup.Provider provider) {
-        return new ItemStack(ModItems.SHAKER.get());
-    }
+	@Override
+	public ItemStack getResultItem(HolderLookup.Provider provider) {
+		return new ItemStack(ModItems.SHAKER.get());
+	}
 
-    @Override
-    public List<ItemStack> rollResults(RandomSource randomSource) {
-        ItemStack result = ShakerMixing.consumeCapturedMixerResult();
-        return result.isEmpty() ? List.of() : List.of(result);
-    }
+	@Override
+	public List<ItemStack> rollResults(RandomSource randomSource) {
+		ItemStack result = ShakerMixing.consumeCapturedMixerResult();
+		return result.isEmpty() ? List.of() : List.of(result);
+	}
 
-    @Override
-    public NonNullList<ItemStack> getRemainingItems(RecipeInput input) {
-        NonNullList<ItemStack> remainders = NonNullList.withSize(input.size(), ItemStack.EMPTY);
-        return remainders;
-    }
+	@Override
+	public NonNullList<ItemStack> getRemainingItems(RecipeInput input) {
+		NonNullList<ItemStack> remainders = NonNullList.withSize(input.size(), ItemStack.EMPTY);
+		return remainders;
+	}
 }

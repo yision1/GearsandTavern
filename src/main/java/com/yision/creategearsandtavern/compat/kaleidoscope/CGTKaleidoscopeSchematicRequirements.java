@@ -28,109 +28,111 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Half;
 
 public final class CGTKaleidoscopeSchematicRequirements {
-    private CGTKaleidoscopeSchematicRequirements() {
-    }
+	private CGTKaleidoscopeSchematicRequirements() {
+	}
 
-    public static void registerCreateCompat() {
-        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.BARREL.get(),
-            CGTKaleidoscopeSchematicRequirements::barrelRequirement);
-        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.GRAPEVINE_TRELLIS.get(),
-            CGTKaleidoscopeSchematicRequirements::grapevineTrellisRequirement);
-        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.ICE_GRAPEVINE_TRELLIS.get(),
-            CGTKaleidoscopeSchematicRequirements::grapevineTrellisRequirement);
-        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.GOLD_GRAPEVINE_TRELLIS.get(),
-            CGTKaleidoscopeSchematicRequirements::grapevineTrellisRequirement);
-        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.POTION_BOTTLE.get(),
-            CGTKaleidoscopeSchematicRequirements::potionBottleRequirement);
-        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.WATER_BOTTLE.get(),
-            (state, blockEntity) -> new ItemRequirement(new StrictNbtStackRequirement(
-                PotionContents.createItemStack(Items.POTION, Potions.WATER), ItemUseType.CONSUME)));
-        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.HONEY_BOTTLE.get(),
-            (state, blockEntity) -> new ItemRequirement(ItemUseType.CONSUME, Items.HONEY_BOTTLE));
-        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.DRAGON_BREATH_BOTTLE.get(),
-            (state, blockEntity) -> new ItemRequirement(ItemUseType.CONSUME, Items.DRAGON_BREATH));
-        SchematicRequirementRegistries.BLOCKS.register(ModBlocks.XP_BOTTLE.get(),
-            (state, blockEntity) -> new ItemRequirement(ItemUseType.CONSUME, Items.EXPERIENCE_BOTTLE));
-        SafeNbtWriterRegistry.REGISTRY.register(ModBlocks.POTION_BOTTLE_BE.get(),
-            CGTKaleidoscopeSchematicRequirements::writePotionBottleData);
+	public static void registerCreateCompat() {
+		SchematicRequirementRegistries.BLOCKS.register(ModBlocks.BARREL.get(),
+			CGTKaleidoscopeSchematicRequirements::barrelRequirement);
+		SchematicRequirementRegistries.BLOCKS.register(ModBlocks.GRAPEVINE_TRELLIS.get(),
+			CGTKaleidoscopeSchematicRequirements::grapevineTrellisRequirement);
+		SchematicRequirementRegistries.BLOCKS.register(ModBlocks.ICE_GRAPEVINE_TRELLIS.get(),
+			CGTKaleidoscopeSchematicRequirements::grapevineTrellisRequirement);
+		SchematicRequirementRegistries.BLOCKS.register(ModBlocks.GOLD_GRAPEVINE_TRELLIS.get(),
+			CGTKaleidoscopeSchematicRequirements::grapevineTrellisRequirement);
+		SchematicRequirementRegistries.BLOCKS.register(ModBlocks.POTION_BOTTLE.get(),
+			CGTKaleidoscopeSchematicRequirements::potionBottleRequirement);
+		SchematicRequirementRegistries.BLOCKS.register(ModBlocks.WATER_BOTTLE.get(),
+			(state, blockEntity) -> new ItemRequirement(new StrictNbtStackRequirement(
+				PotionContents.createItemStack(Items.POTION, Potions.WATER), ItemUseType.CONSUME)));
+		SchematicRequirementRegistries.BLOCKS.register(ModBlocks.HONEY_BOTTLE.get(),
+			(state, blockEntity) -> new ItemRequirement(ItemUseType.CONSUME, Items.HONEY_BOTTLE));
+		SchematicRequirementRegistries.BLOCKS.register(ModBlocks.DRAGON_BREATH_BOTTLE.get(),
+			(state, blockEntity) -> new ItemRequirement(ItemUseType.CONSUME, Items.DRAGON_BREATH));
+		SchematicRequirementRegistries.BLOCKS.register(ModBlocks.XP_BOTTLE.get(),
+			(state, blockEntity) -> new ItemRequirement(ItemUseType.CONSUME, Items.EXPERIENCE_BOTTLE));
+		SafeNbtWriterRegistry.REGISTRY.register(ModBlocks.POTION_BOTTLE_BE.get(),
+			CGTKaleidoscopeSchematicRequirements::writePotionBottleData);
 
-        registerLowerHalfRequirement(ModBlocks.STEPLADDER.get(), ModItems.STEPLADDER.get());
-        registerLowerHalfRequirement(ModBlocks.CHALKBOARD.get(), ModItems.CHALKBOARD.get());
-        registerDoubleBlockLowerHalfRequirement(ModBlocks.BELL_PENDANT_LAMP.get(),
-            ModItems.BELL_PENDANT_LAMP.get());
-        registerDoubleBlockLowerHalfRequirement(ModBlocks.YELLOW_PENDANT_LAMP.get(),
-            ModItems.YELLOW_PENDANT_LAMP.get());
-        registerDoubleBlockLowerHalfRequirement(ModBlocks.BLUE_PENDANT_LAMP.get(),
-            ModItems.BLUE_PENDANT_LAMP.get());
+		registerLowerHalfRequirement(ModBlocks.STEPLADDER.get(), ModItems.STEPLADDER.get());
+		registerLowerHalfRequirement(ModBlocks.CHALKBOARD.get(), ModItems.CHALKBOARD.get());
+		registerDoubleBlockLowerHalfRequirement(ModBlocks.BELL_PENDANT_LAMP.get(),
+			ModItems.BELL_PENDANT_LAMP.get());
+		registerDoubleBlockLowerHalfRequirement(ModBlocks.YELLOW_PENDANT_LAMP.get(),
+			ModItems.YELLOW_PENDANT_LAMP.get());
+		registerDoubleBlockLowerHalfRequirement(ModBlocks.BLUE_PENDANT_LAMP.get(),
+			ModItems.BLUE_PENDANT_LAMP.get());
 
-        registerLowerHalfRequirement(ModBlocks.BASE_SANDWICH_BOARD.get(), ModItems.BASE_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.GRASS_SANDWICH_BOARD.get(), ModItems.GRASS_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.ALLIUM_SANDWICH_BOARD.get(), ModItems.ALLIUM_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.AZURE_BLUET_SANDWICH_BOARD.get(),
-            ModItems.AZURE_BLUET_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.CORNFLOWER_SANDWICH_BOARD.get(), ModItems.CORNFLOWER_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.ORCHID_SANDWICH_BOARD.get(), ModItems.ORCHID_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.PEONY_SANDWICH_BOARD.get(), ModItems.PEONY_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.PINK_PETALS_SANDWICH_BOARD.get(),
-            ModItems.PINK_PETALS_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.PITCHER_PLANT_SANDWICH_BOARD.get(),
-            ModItems.PITCHER_PLANT_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.POPPY_SANDWICH_BOARD.get(), ModItems.POPPY_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.SUNFLOWER_SANDWICH_BOARD.get(), ModItems.SUNFLOWER_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.TORCHFLOWER_SANDWICH_BOARD.get(),
-            ModItems.TORCHFLOWER_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.TULIP_SANDWICH_BOARD.get(), ModItems.TULIP_SANDWICH_BOARD.get());
-        registerLowerHalfRequirement(ModBlocks.WITHER_ROSE_SANDWICH_BOARD.get(),
-            ModItems.WITHER_ROSE_SANDWICH_BOARD.get());
-    }
+		registerLowerHalfRequirement(ModBlocks.BASE_SANDWICH_BOARD.get(), ModItems.BASE_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.GRASS_SANDWICH_BOARD.get(), ModItems.GRASS_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.ALLIUM_SANDWICH_BOARD.get(), ModItems.ALLIUM_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.AZURE_BLUET_SANDWICH_BOARD.get(),
+			ModItems.AZURE_BLUET_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.CORNFLOWER_SANDWICH_BOARD.get(),
+			ModItems.CORNFLOWER_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.ORCHID_SANDWICH_BOARD.get(), ModItems.ORCHID_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.PEONY_SANDWICH_BOARD.get(), ModItems.PEONY_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.PINK_PETALS_SANDWICH_BOARD.get(),
+			ModItems.PINK_PETALS_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.PITCHER_PLANT_SANDWICH_BOARD.get(),
+			ModItems.PITCHER_PLANT_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.POPPY_SANDWICH_BOARD.get(), ModItems.POPPY_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.SUNFLOWER_SANDWICH_BOARD.get(), ModItems.SUNFLOWER_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.TORCHFLOWER_SANDWICH_BOARD.get(),
+			ModItems.TORCHFLOWER_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.TULIP_SANDWICH_BOARD.get(), ModItems.TULIP_SANDWICH_BOARD.get());
+		registerLowerHalfRequirement(ModBlocks.WITHER_ROSE_SANDWICH_BOARD.get(),
+			ModItems.WITHER_ROSE_SANDWICH_BOARD.get());
+	}
 
-    private static ItemRequirement barrelRequirement(BlockState state, @Nullable BlockEntity blockEntity) {
-        if (state.getValue(BarrelBlock.LAYER) == AttachFace.FLOOR
-            && state.getValue(BarrelBlock.INDEX) == 4) {
-            return new ItemRequirement(ItemUseType.CONSUME, ModItems.BARREL.get());
-        }
-        return ItemRequirement.INVALID;
-    }
+	private static ItemRequirement barrelRequirement(BlockState state, @Nullable BlockEntity blockEntity) {
+		if (state.getValue(BarrelBlock.LAYER) == AttachFace.FLOOR
+			&& state.getValue(BarrelBlock.INDEX) == 4) {
+			return new ItemRequirement(ItemUseType.CONSUME, ModItems.BARREL.get());
+		}
+		return ItemRequirement.INVALID;
+	}
 
-    private static ItemRequirement grapevineTrellisRequirement(BlockState state, @Nullable BlockEntity blockEntity) {
-        return ItemRequirement.of(ModBlocks.TRELLIS.get().defaultBlockState(), null)
-            .union(new ItemRequirement(ItemUseType.CONSUME, ModItems.GRAPEVINE.get()));
-    }
+	private static ItemRequirement grapevineTrellisRequirement(BlockState state, @Nullable BlockEntity blockEntity) {
+		return ItemRequirement.of(ModBlocks.TRELLIS.get().defaultBlockState(), null)
+			.union(new ItemRequirement(ItemUseType.CONSUME, ModItems.GRAPEVINE.get()));
+	}
 
-    private static ItemRequirement potionBottleRequirement(BlockState state, @Nullable BlockEntity blockEntity) {
-        if (!(blockEntity instanceof PotionBottleBlockEntity potionBottle)) {
-            return ItemRequirement.INVALID;
-        }
-        ItemStack potionStack = potionBottle.getPotionStack();
-        if (potionStack.isEmpty()) {
-            return ItemRequirement.INVALID;
-        }
-        return new ItemRequirement(new StrictNbtStackRequirement(potionStack.copyWithCount(1), ItemUseType.CONSUME));
-    }
+	private static ItemRequirement potionBottleRequirement(BlockState state, @Nullable BlockEntity blockEntity) {
+		if (!(blockEntity instanceof PotionBottleBlockEntity potionBottle)) {
+			return ItemRequirement.INVALID;
+		}
+		ItemStack potionStack = potionBottle.getPotionStack();
+		if (potionStack.isEmpty()) {
+			return ItemRequirement.INVALID;
+		}
+		return new ItemRequirement(new StrictNbtStackRequirement(potionStack.copyWithCount(1), ItemUseType.CONSUME));
+	}
 
-    private static void writePotionBottleData(BlockEntity blockEntity, CompoundTag tag,
-                                               HolderLookup.Provider registries) {
-        if (blockEntity instanceof PotionBottleBlockEntity potionBottle) {
-            tag.put("Item", potionBottle.getPotionStack().saveOptional(registries));
-        }
-    }
+	private static void writePotionBottleData(BlockEntity blockEntity, CompoundTag tag,
+		HolderLookup.Provider registries) {
+		if (blockEntity instanceof PotionBottleBlockEntity potionBottle) {
+			tag.put("Item", potionBottle.getPotionStack().saveOptional(registries));
+		}
+	}
 
-    private static void registerLowerHalfRequirement(Block block, Item item) {
-        SchematicRequirementRegistries.BLOCKS.register(block,
-            (state, blockEntity) -> lowerHalfRequirement(state, blockEntity, item));
-    }
+	private static void registerLowerHalfRequirement(Block block, Item item) {
+		SchematicRequirementRegistries.BLOCKS.register(block,
+			(state, blockEntity) -> lowerHalfRequirement(state, blockEntity, item));
+	}
 
-    private static ItemRequirement lowerHalfRequirement(BlockState state, @Nullable BlockEntity blockEntity, Item item) {
-        if (state.getValue(BlockStateProperties.HALF) == Half.BOTTOM) {
-            return new ItemRequirement(ItemUseType.CONSUME, item);
-        }
-        return ItemRequirement.INVALID;
-    }
+	private static ItemRequirement lowerHalfRequirement(BlockState state, @Nullable BlockEntity blockEntity,
+		Item item) {
+		if (state.getValue(BlockStateProperties.HALF) == Half.BOTTOM) {
+			return new ItemRequirement(ItemUseType.CONSUME, item);
+		}
+		return ItemRequirement.INVALID;
+	}
 
-    private static void registerDoubleBlockLowerHalfRequirement(Block block, Item item) {
-        SchematicRequirementRegistries.BLOCKS.register(block, (state, blockEntity) ->
-            state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER
-                ? new ItemRequirement(ItemUseType.CONSUME, item)
-                : ItemRequirement.INVALID);
-    }
+	private static void registerDoubleBlockLowerHalfRequirement(Block block, Item item) {
+		SchematicRequirementRegistries.BLOCKS.register(block,
+			(state, blockEntity) -> state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER
+				? new ItemRequirement(ItemUseType.CONSUME, item)
+				: ItemRequirement.INVALID);
+	}
 }

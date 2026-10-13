@@ -1,97 +1,77 @@
 package com.yision.creategearsandtavern.content.fluids.drink;
 
-import com.github.ysbbbbbb.kaleidoscopetavern.init.ModDataComponents;
-import com.simibubi.create.AllFluids.TintedFluidType;
 import com.simibubi.create.content.fluids.VirtualFluid;
 import com.yision.creategearsandtavern.registry.CGTDataComponents;
+import com.yision.creategearsandtavern.registry.CGTFluids;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.material.FluidState;
+
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public class KaleidoscopeDrinkFluid extends VirtualFluid {
-    public static final String QUALITY_NAME_TRANSLATION_KEY = "fluid.creategearsandtavern.kaleidoscope_drink.with_quality";
+	public static final String QUALITY_NAME_TRANSLATION_KEY =
+		"fluid.creategearsandtavern.kaleidoscope_drink.with_quality";
 
-    public static KaleidoscopeDrinkFluid createSource(Properties properties) {
-        return new KaleidoscopeDrinkFluid(properties, true);
-    }
+	public static KaleidoscopeDrinkFluid createSource(Properties properties) {
+		return new KaleidoscopeDrinkFluid(properties, true);
+	}
 
-    public static KaleidoscopeDrinkFluid createFlowing(Properties properties) {
-        return new KaleidoscopeDrinkFluid(properties, false);
-    }
+	public static KaleidoscopeDrinkFluid createFlowing(Properties properties) {
+		return new KaleidoscopeDrinkFluid(properties, false);
+	}
 
-    public KaleidoscopeDrinkFluid(Properties properties, boolean source) {
-        super(properties, source);
-    }
+	public KaleidoscopeDrinkFluid(Properties properties, boolean source) {
+		super(properties, source);
+	}
 
-    public static KaleidoscopeDrinkVariant variant(FluidStack stack) {
-        KaleidoscopeDrinkVariant stored = stack.get(CGTDataComponents.KALEIDOSCOPE_DRINK_VARIANT);
-        if (stored != null) {
-            return stored;
-        }
-        return new KaleidoscopeDrinkVariant(resolveDrinkId(stack), 0);
-    }
+	public static KaleidoscopeDrinkVariant variant(FluidStack stack) {
+		ResourceLocation drinkId = resolveDrinkId(stack);
+		KaleidoscopeDrinkVariant stored = stack.get(CGTDataComponents.KALEIDOSCOPE_DRINK_VARIANT);
+		int level = stored != null && stored.drinkId().equals(drinkId) ? stored.brewLevel() : 0;
+		return new KaleidoscopeDrinkVariant(drinkId, CGTDrinkCatalog.normalizedBrewLevel(drinkId, level));
+	}
 
-    public static ResourceLocation resolveDrinkId(FluidStack stack) {
-        String path = BuiltInRegistries.FLUID.getKey(stack.getFluid()).getPath();
-        if (path.startsWith("flowing_")) {
-            path = path.substring("flowing_".length());
-        }
-        return CGTDrinkCatalog.byPath(path).drinkId();
-    }
+	public static boolean hasValidIdentity(FluidStack stack) {
+		CGTDrinkDefinition definition = CGTFluids.definition(stack.getFluid());
+		if (definition == null) {
+			return false;
+		}
+		KaleidoscopeDrinkVariant stored = stack.get(CGTDataComponents.KALEIDOSCOPE_DRINK_VARIANT);
+		return stored == null || stored.drinkId().equals(definition.drinkId());
+	}
 
-    public static int tintColor(FluidStack stack) {
-        KaleidoscopeDrinkVariant variant = variant(stack);
-        if (CGTDrinkCatalog.isSignatureCocktail(variant.drinkId())) {
-            Integer signatureColor = stack.get(ModDataComponents.SIGNATURE_COCKTAIL_COLOR.get());
-            if (signatureColor != null) {
-                return 0xff000000 | signatureColor;
-            }
-            return 0xff000000 | variant.definition().color();
-        }
-        return tintColor(variant);
-    }
+	public static ResourceLocation resolveDrinkId(FluidStack stack) {
+		CGTDrinkDefinition definition = CGTFluids.definition(stack.getFluid());
+		if (definition == null) {
+			throw new IllegalArgumentException("Unknown drink fluid: " + stack.getFluid());
+		}
+		return definition.drinkId();
+	}
 
-    public static int tintColor(KaleidoscopeDrinkVariant variant) {
-        int baseColor = variant.definition().color();
-        if (variant.brewLevel() <= 0) {
-            return 0xff000000 | baseColor;
-        }
-        float multiplier = 0.78f + Math.min(variant.brewLevel(), 7) * 0.05f;
-        int red = Math.min(255, Math.round(((baseColor >> 16) & 0xff) * multiplier));
-        int green = Math.min(255, Math.round(((baseColor >> 8) & 0xff) * multiplier));
-        int blue = Math.min(255, Math.round((baseColor & 0xff) * multiplier));
-        return 0xff000000 | (red << 16) | (green << 8) | blue;
-    }
+	public static class KaleidoscopeDrinkFluidType extends FluidType {
+		private final CGTDrinkDefinition definition;
 
-    public static class KaleidoscopeDrinkFluidType extends TintedFluidType {
-        public KaleidoscopeDrinkFluidType(net.neoforged.neoforge.fluids.FluidType.Properties properties, ResourceLocation stillTexture,
-                                          ResourceLocation flowingTexture) {
-            super(properties, stillTexture, flowingTexture);
-        }
+		public KaleidoscopeDrinkFluidType(Properties properties, CGTDrinkDefinition definition) {
+			super(properties);
+			this.definition = definition;
+		}
 
-        @Override
-        public Component getDescription(FluidStack stack) {
-            KaleidoscopeDrinkVariant variant = KaleidoscopeDrinkFluid.variant(stack);
-            Component drinkName = Component.translatable(variant.definition().translationKey());
-            if (!variant.definition().qualityAware() || variant.brewLevel() <= 0) {
-                return drinkName;
-            }
-            return Component.translatable(QUALITY_NAME_TRANSLATION_KEY, Component.translatable(variant.qualityTranslationKey()), drinkName);
-        }
+		@Override
+		public Component getDescription() {
+			return definition.item().getName(definition.item().getDefaultInstance());
+		}
 
-        @Override
-        protected int getTintColor(FluidStack stack) {
-            return KaleidoscopeDrinkFluid.tintColor(stack);
-        }
-
-        @Override
-        protected int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-            return NO_TINT;
-        }
-    }
+		@Override
+		public Component getDescription(FluidStack stack) {
+			KaleidoscopeDrinkVariant variant = variant(stack);
+			Component name = getDescription();
+			if (!definition.qualityAware() || variant.brewLevel() <= 0) {
+				return name;
+			}
+			return Component.translatable(QUALITY_NAME_TRANSLATION_KEY,
+				Component.translatable(variant.qualityTranslationKey()), name);
+		}
+	}
 }

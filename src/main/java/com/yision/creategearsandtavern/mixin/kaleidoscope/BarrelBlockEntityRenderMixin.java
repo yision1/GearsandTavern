@@ -13,16 +13,17 @@ import net.minecraft.world.level.block.state.BlockState;
 
 @Mixin(BarrelBlockEntityRender.class)
 public class BarrelBlockEntityRenderMixin {
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    private void cgt$renderOnlyController(BarrelBlockEntity barrel, float partialTick, com.mojang.blaze3d.vertex.PoseStack poseStack,
-                                          net.minecraft.client.renderer.MultiBufferSource buffer, int packedLight,
-                                          int packedOverlay, CallbackInfo ci) {
-        BlockState state = barrel.getBlockState();
-        if (!(state.getBlock() instanceof BarrelBlock)) {
-            return;
-        }
-        if (!BarrelBlock.getOriginPos(barrel.getBlockPos(), state).equals(barrel.getBlockPos())) {
-            ci.cancel();
-        }
-    }
+	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
+	private void cgt$renderOnlyController(BarrelBlockEntity barrel, float partialTick,
+		com.mojang.blaze3d.vertex.PoseStack poseStack,
+		net.minecraft.client.renderer.MultiBufferSource buffer, int packedLight,
+		int packedOverlay, CallbackInfo ci) {
+		BlockState state = barrel.getBlockState();
+		if (!(state.getBlock() instanceof BarrelBlock)) {
+			return;
+		}
+		if (!BarrelBlock.getOriginPos(barrel.getBlockPos(), state).equals(barrel.getBlockPos())) {
+			ci.cancel();
+		}
+	}
 }

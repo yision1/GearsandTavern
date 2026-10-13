@@ -3,20 +3,19 @@ package com.yision.creategearsandtavern.compat.kaleidoscope;
 import net.minecraft.core.BlockPos;
 
 public interface KaleidoscopeBarrelProxy {
-    BlockPos cgt$getControllerPos();
+	BlockPos cgt$getControllerPos();
 
-    void cgt$setControllerPos(BlockPos controllerPos);
+	void cgt$setControllerPos(BlockPos controllerPos);
 
-    boolean cgt$isProxyPart();
+	boolean cgt$isProxyPart();
 
-    void cgt$setProxyPart(boolean proxyPart);
+	void cgt$setProxyPart(boolean proxyPart);
 
-    boolean cgt$isStructureInitialized();
+	boolean cgt$isStructureInitialized();
 
-    void cgt$setStructureInitialized(boolean initialized);
+	void cgt$setStructureInitialized(boolean initialized);
 
-    boolean cgt$isRedstonePowered();
+	boolean cgt$isRedstonePowered();
 
-    void cgt$setRedstonePowered(boolean powered);
+	void cgt$setRedstonePowered(boolean powered);
 }
-

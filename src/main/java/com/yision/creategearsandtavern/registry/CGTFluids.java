@@ -1,133 +1,181 @@
 package com.yision.creategearsandtavern.registry;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import com.github.ysbbbbbb.kaleidoscopetavern.datamap.data.DrinkEffectData;
 import com.github.ysbbbbbb.kaleidoscopetavern.init.ModDataComponents;
-import com.simibubi.create.AllFluids;
-import com.simibubi.create.foundation.data.CreateRegistrate;
-import com.tterrag.registrate.util.entry.FluidEntry;
-import com.yision.creategearsandtavern.CreateGearsAndTavernRegistrate;
+import com.yision.creategearsandtavern.CreateGearsandTavern;
 import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkCatalog;
 import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkDefinition;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkFluid;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkFluid.KaleidoscopeDrinkFluidType;
-import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkType;
 import com.yision.creategearsandtavern.content.fluids.drink.KaleidoscopeDrinkVariant;
 
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.ModList;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.material.Fluid;
+
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.callback.AddCallback;
 
-public class CGTFluids {
-    private static final CreateRegistrate REGISTRATE = CreateGearsAndTavernRegistrate.registrate();
-    private static final ResourceLocation POTION_STILL = ResourceLocation.fromNamespaceAndPath("create", "fluid/potion_still");
-    private static final ResourceLocation POTION_FLOW = ResourceLocation.fromNamespaceAndPath("create", "fluid/potion_flow");
+public final class CGTFluids {
+	private static final Map<ResourceLocation, DrinkFluids> ENTRIES = new LinkedHashMap<>();
+	private static final Map<Fluid, CGTDrinkDefinition> BY_FLUID = new IdentityHashMap<>();
+	private static boolean installed;
+	private static boolean complete;
 
-    public static final FluidEntry<KaleidoscopeDrinkFluid> WINE = register(KaleidoscopeDrinkType.WINE);
-    public static final FluidEntry<KaleidoscopeDrinkFluid> CHAMPAGNE = register(KaleidoscopeDrinkType.CHAMPAGNE);
-    public static final FluidEntry<KaleidoscopeDrinkFluid> VODKA = register(KaleidoscopeDrinkType.VODKA);
-    public static final FluidEntry<KaleidoscopeDrinkFluid> BRANDY = register(KaleidoscopeDrinkType.BRANDY);
-    public static final FluidEntry<KaleidoscopeDrinkFluid> CARIGNAN = register(KaleidoscopeDrinkType.CARIGNAN);
-    public static final FluidEntry<KaleidoscopeDrinkFluid> SAKURA_WINE = register(KaleidoscopeDrinkType.SAKURA_WINE);
-    public static final FluidEntry<KaleidoscopeDrinkFluid> PLUM_WINE = register(KaleidoscopeDrinkType.PLUM_WINE);
-    public static final FluidEntry<KaleidoscopeDrinkFluid> WHISKEY = register(KaleidoscopeDrinkType.WHISKEY);
-    public static final FluidEntry<KaleidoscopeDrinkFluid> ICE_WINE = register(KaleidoscopeDrinkType.ICE_WINE);
-    public static final FluidEntry<KaleidoscopeDrinkFluid> VINEGAR = register(KaleidoscopeDrinkType.VINEGAR);
+	private CGTFluids() {
+	}
 
-    private static final Map<ResourceLocation, FluidEntry<KaleidoscopeDrinkFluid>> ALL_ENTRIES = CGTDrinkCatalog.allDefinitions().stream()
-        .filter(def -> {
-            try {
-                KaleidoscopeDrinkType.byId(def.drinkId());
-                return false;
-            } catch (IllegalArgumentException ignored) {
-                return true;
-            }
-        })
-        .filter(CGTFluids::isEnabled)
-        .collect(Collectors.toUnmodifiableMap(
-            CGTDrinkDefinition::drinkId,
-            def -> registerByPath(def.drinkId().getPath())
-        ));
+	public static void register(IEventBus modEventBus) {
+		if (installed) {
+			return;
+		}
+		installed = true;
+		BuiltInRegistries.ITEM
+			.addCallback((AddCallback<Item>) (registry, rawId, key, item) -> discover(key.location(), item));
+		BuiltInRegistries.ITEM.entrySet().forEach(entry -> discover(entry.getKey().location(), entry.getValue()));
+		modEventBus.addListener(CGTFluids::finishRegistration);
+	}
 
-    public static final FluidEntry<KaleidoscopeDrinkFluid> SIGNATURE_COCKTAIL = getEntry(CGTDrinkCatalog.SIGNATURE_COCKTAIL_ID);
+	private static void discover(ResourceLocation itemId, Item item) {
+		if (complete) {
+			return;
+		}
+		CGTDrinkDefinition definition = CGTDrinkCatalog.discover(itemId, item);
+		if (definition == null) {
+			return;
+		}
+		DrinkFluids fluids = new DrinkFluids(definition);
+		ENTRIES.put(definition.drinkId(), fluids);
+		BY_FLUID.put(fluids.source(), definition);
+		BY_FLUID.put(fluids.flowing(), definition);
+	}
 
-    private static FluidEntry<KaleidoscopeDrinkFluid> register(KaleidoscopeDrinkType drinkType) {
-        return REGISTRATE.virtualFluid(drinkType.id().getPath(), POTION_STILL, POTION_FLOW,
-                KaleidoscopeDrinkFluidType::new, KaleidoscopeDrinkFluid::createSource, KaleidoscopeDrinkFluid::createFlowing)
-            .register();
-    }
+	private static void finishRegistration(BlockEntityTypeAddBlocksEvent event) {
+		if (complete) {
+			return;
+		}
+		CGTDrinkCatalog.complete();
+		Map<CGTDrinkDefinition, String> paths = new LinkedHashMap<>();
+		CGTDrinkCatalog.allDefinitions().forEach(definition -> paths.put(definition, definition.itemId().getPath()));
+		Set<CGTDrinkDefinition> qualified = new HashSet<>();
+		boolean changed;
+		do {
+			changed = false;
+			Map<String, CGTDrinkDefinition> owners = new HashMap<>();
+			Set<CGTDrinkDefinition> collisions = new HashSet<>();
+			for (var entry : paths.entrySet()) {
+				for (String path : List.of(entry.getValue(), "flowing_" + entry.getValue())) {
+					CGTDrinkDefinition previous = owners.putIfAbsent(path, entry.getKey());
+					if (previous != null) {
+						collisions.add(previous);
+						collisions.add(entry.getKey());
+					}
+					if (BuiltInRegistries.FLUID.containsKey(id(path))) {
+						collisions.add(entry.getKey());
+					}
+				}
+				if (NeoForgeRegistries.FLUID_TYPES.containsKey(id(entry.getValue()))) {
+					collisions.add(entry.getKey());
+				}
+			}
+			for (CGTDrinkDefinition definition : collisions) {
+				if (definition.itemId().getNamespace().equals("kaleidoscope_tavern")) {
+					continue;
+				}
+				if (qualified.add(definition)) {
+					paths.put(definition, definition.itemId().getNamespace() + "/" + definition.itemId().getPath());
+					changed = true;
+				}
+			}
+			if (!collisions.isEmpty() && !changed) {
+				throw new IllegalStateException("Conflicting drink fluid ids after namespace qualification: "
+					+ collisions.stream().map(CGTDrinkDefinition::itemId).sorted().toList());
+			}
+		} while (changed);
+		for (var entry : paths.entrySet()) {
+			DrinkFluids fluids = ENTRIES.get(entry.getKey().drinkId());
+			String path = entry.getValue();
+			Registry.register(NeoForgeRegistries.FLUID_TYPES, id(path), fluids.type());
+			Registry.register(BuiltInRegistries.FLUID, id(path), fluids.source());
+			Registry.register(BuiltInRegistries.FLUID, id("flowing_" + path), fluids.flowing());
+			if (qualified.contains(entry.getKey())) {
+				CreateGearsandTavern.LOGGER.warn("Drink {} uses {} because its fluid path conflicts",
+					entry.getKey().itemId(), id(path));
+			}
+		}
+		complete = true;
+		CreateGearsandTavern.LOGGER.info("Registered {} automatically discovered drinks", ENTRIES.size());
+	}
 
-    private static FluidEntry<KaleidoscopeDrinkFluid> registerByPath(String path) {
-        return REGISTRATE.virtualFluid(path, POTION_STILL, POTION_FLOW,
-                KaleidoscopeDrinkFluidType::new, KaleidoscopeDrinkFluid::createSource, KaleidoscopeDrinkFluid::createFlowing)
-            .register();
-    }
+	private static ResourceLocation id(String path) {
+		return ResourceLocation.fromNamespaceAndPath(CreateGearsandTavern.MOD_ID, path);
+	}
 
-    private static boolean isEnabled(CGTDrinkDefinition definition) {
-        return definition.requiredMods().stream().allMatch(ModList.get()::isLoaded);
-    }
+	public static CGTDrinkDefinition definition(Fluid fluid) {
+		return BY_FLUID.get(fluid);
+	}
 
-    public static FluidStack of(KaleidoscopeDrinkType drinkType, int amount, int brewLevel) {
-        FluidStack fluidStack = new FluidStack(entry(drinkType).get().getSource(), amount);
-        fluidStack.set(CGTDataComponents.KALEIDOSCOPE_DRINK_VARIANT, KaleidoscopeDrinkVariant.of(drinkType, brewLevel));
-        return fluidStack;
-    }
+	public static DrinkFluids getEntry(ResourceLocation drinkId) {
+		DrinkFluids fluids = ENTRIES.get(drinkId);
+		if (fluids == null) {
+			throw new IllegalArgumentException("No fluid entry for drink id: " + drinkId);
+		}
+		return fluids;
+	}
 
-    public static FluidStack of(ResourceLocation drinkId, int amount, int brewLevel) {
-        FluidEntry<KaleidoscopeDrinkFluid> fluidEntry = getEntry(drinkId);
-        FluidStack fluidStack = new FluidStack(fluidEntry.get().getSource(), amount);
-        fluidStack.set(CGTDataComponents.KALEIDOSCOPE_DRINK_VARIANT, new KaleidoscopeDrinkVariant(drinkId, brewLevel));
-        return fluidStack;
-    }
+	public static FluidStack of(ResourceLocation drinkId, int amount, int brewLevel) {
+		FluidStack stack = new FluidStack(getEntry(drinkId).source(), amount);
+		stack.set(CGTDataComponents.KALEIDOSCOPE_DRINK_VARIANT,
+			new KaleidoscopeDrinkVariant(drinkId, CGTDrinkCatalog.normalizedBrewLevel(drinkId, brewLevel)));
+		return stack;
+	}
 
-    public static FluidStack signatureCocktailStack(int amount, List<DrinkEffectData.Entry> effects, int color) {
-        FluidStack stack = of(CGTDrinkCatalog.SIGNATURE_COCKTAIL_ID, amount, CGTDrinkCatalog.LEVELLESS_BREW_LEVEL);
-        stack.set(ModDataComponents.SIGNATURE_COCKTAIL_EFFECTS.get(), effects);
-        stack.set(ModDataComponents.SIGNATURE_COCKTAIL_COLOR.get(), color);
-        return stack;
-    }
+	public static FluidStack signatureCocktailStack(int amount, List<DrinkEffectData.Entry> effects, int color) {
+		FluidStack stack = of(CGTDrinkCatalog.SIGNATURE_COCKTAIL_ID, amount, CGTDrinkCatalog.LEVELLESS_BREW_LEVEL);
+		stack.set(ModDataComponents.SIGNATURE_COCKTAIL_EFFECTS.get(), List.copyOf(effects));
+		stack.set(ModDataComponents.SIGNATURE_COCKTAIL_COLOR.get(), color);
+		return stack;
+	}
 
-    public static FluidStack bucketOf(KaleidoscopeDrinkType drinkType) {
-        return of(drinkType, FluidType.BUCKET_VOLUME, 1);
-    }
+	public static final class DrinkFluids {
+		private final FluidType type;
+		private final KaleidoscopeDrinkFluid source;
+		private final KaleidoscopeDrinkFluid flowing;
 
-    public static FluidEntry<KaleidoscopeDrinkFluid> entry(KaleidoscopeDrinkType drinkType) {
-        return switch (drinkType) {
-            case WINE -> WINE;
-            case CHAMPAGNE -> CHAMPAGNE;
-            case VODKA -> VODKA;
-            case BRANDY -> BRANDY;
-            case CARIGNAN -> CARIGNAN;
-            case SAKURA_WINE -> SAKURA_WINE;
-            case PLUM_WINE -> PLUM_WINE;
-            case WHISKEY -> WHISKEY;
-            case ICE_WINE -> ICE_WINE;
-            case VINEGAR -> VINEGAR;
-        };
-    }
+		private DrinkFluids(CGTDrinkDefinition definition) {
+			type = new KaleidoscopeDrinkFluidType(FluidType.Properties.create().density(1000).viscosity(1000),
+				definition);
+			BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(this::type, this::source,
+				this::flowing);
+			source = KaleidoscopeDrinkFluid.createSource(properties);
+			flowing = KaleidoscopeDrinkFluid.createFlowing(properties);
+		}
 
-    public static FluidEntry<KaleidoscopeDrinkFluid> getEntry(ResourceLocation drinkId) {
-        KaleidoscopeDrinkType tavernType;
-        try {
-            tavernType = KaleidoscopeDrinkType.byId(drinkId);
-        } catch (IllegalArgumentException ignored) {
-            tavernType = null;
-        }
-        if (tavernType != null) {
-            return entry(tavernType);
-        }
-        FluidEntry<KaleidoscopeDrinkFluid> extra = ALL_ENTRIES.get(drinkId);
-        if (extra == null) {
-            throw new IllegalArgumentException("No fluid entry for drink id: " + drinkId);
-        }
-        return extra;
-    }
+		public FluidType type() {
+			return type;
+		}
 
-    public static void register() {
-    }
+		public KaleidoscopeDrinkFluid source() {
+			return source;
+		}
+
+		public KaleidoscopeDrinkFluid flowing() {
+			return flowing;
+		}
+	}
 }

@@ -11,14 +11,16 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class CGTIngredientTypes {
-    public static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES =
-        DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, CreateGearsandTavern.MOD_ID);
-    public static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES =
-        DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, CreateGearsandTavern.MOD_ID);
+	public static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister
+		.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, CreateGearsandTavern.MOD_ID);
+	public static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister
+		.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, CreateGearsandTavern.MOD_ID);
 
-    public static final DeferredHolder<IngredientType<?>, IngredientType<ReadyShakerIngredient>> READY_SHAKER =
-        INGREDIENT_TYPES.register("ready_shaker", () -> new IngredientType<>(ReadyShakerIngredient.CODEC));
-    public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<SignatureCocktailFluidIngredient>> SIGNATURE_COCKTAIL_FLUID =
-        FLUID_INGREDIENT_TYPES.register("signature_cocktail_fluid",
-            () -> new FluidIngredientType<>(SignatureCocktailFluidIngredient.CODEC));
+	public static final DeferredHolder<IngredientType<?>, IngredientType<ReadyShakerIngredient>> READY_SHAKER =
+		INGREDIENT_TYPES
+		.register("ready_shaker", () -> new IngredientType<>(ReadyShakerIngredient.CODEC));
+	public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<SignatureCocktailFluidIngredient>>
+		SIGNATURE_COCKTAIL_FLUID = FLUID_INGREDIENT_TYPES
+		.register("signature_cocktail_fluid",
+			() -> new FluidIngredientType<>(SignatureCocktailFluidIngredient.CODEC));
 }

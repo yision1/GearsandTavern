@@ -6,10 +6,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 
 public class CreateGearsAndTavernRegistrate {
-    private static final CreateRegistrate REGISTRATE = CreateRegistrate.create(CreateGearsandTavern.MOD_ID)
-        .defaultCreativeTab((ResourceKey<CreativeModeTab>) null);
+	private static final CreateRegistrate REGISTRATE = CreateRegistrate.create(CreateGearsandTavern.MOD_ID)
+		.defaultCreativeTab((ResourceKey<CreativeModeTab>) null);
 
-    public static CreateRegistrate registrate() {
-        return REGISTRATE;
-    }
+	public static CreateRegistrate registrate() {
+		return REGISTRATE;
+	}
 }

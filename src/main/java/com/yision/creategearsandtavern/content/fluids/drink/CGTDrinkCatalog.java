@@ -1,719 +1,86 @@
 package com.yision.creategearsandtavern.content.fluids.drink;
 
+import java.util.Comparator;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import com.github.ysbbbbbb.kaleidoscopetavern.api.blockentity.IBarrel;
+import com.github.ysbbbbbb.kaleidoscopetavern.item.CocktailBlockItem;
+import com.github.ysbbbbbb.kaleidoscopetavern.item.DrinkBlockItem;
+import com.github.ysbbbbbb.kaleidoscopetavern.item.MolotovBlockItem;
+import com.github.ysbbbbbb.kaleidoscopetavern.item.SignatureCocktailBlockItem;
+import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkDefinition.Kind;
 
 import net.minecraft.resources.ResourceLocation;
-
-import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkDefinition.ServingKind;
-import com.yision.creategearsandtavern.content.fluids.drink.CGTDrinkDefinition.TransferMode;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 public final class CGTDrinkCatalog {
-	private static final ResourceLocation MOLOTOV_ID = ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "molotov");
-	public static final ResourceLocation SIGNATURE_COCKTAIL_ID = ResourceLocation.fromNamespaceAndPath("creategearsandtavern", "signature_cocktail");
+	public static final ResourceLocation SIGNATURE_COCKTAIL_ID = ResourceLocation
+		.fromNamespaceAndPath("creategearsandtavern", "signature_cocktail");
 	public static final int LEVELLESS_BREW_LEVEL = 0;
-	public static final int COCKTAIL_AMOUNT = 250;
-	public static final int SIGNATURE_COCKTAIL_DEFAULT_COLOR = 0x5555ff;
+	public static final int SERVING_AMOUNT = 250;
+	public static final int COCKTAIL_AMOUNT = SERVING_AMOUNT;
 
-	private static final List<CGTDrinkDefinition> DEFINITIONS = List.of(
-
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "wine"),
-			"block.kaleidoscope_tavern.wine",
-			0x7b2442,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "champagne"),
-			"block.kaleidoscope_tavern.champagne",
-			0xefd58c,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "vodka"),
-			"block.kaleidoscope_tavern.vodka",
-			0xe9f3f9,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "brandy"),
-			"block.kaleidoscope_tavern.brandy",
-			0xa85b29,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "carignan"),
-			"block.kaleidoscope_tavern.carignan",
-			0x5e1d34,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "sakura_wine"),
-			"block.kaleidoscope_tavern.sakura_wine",
-			0xe695b6,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "plum_wine"),
-			"block.kaleidoscope_tavern.plum_wine",
-			0xc9ad6a,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "whiskey"),
-			"block.kaleidoscope_tavern.whiskey",
-			0xad7a2a,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "ice_wine"),
-			"block.kaleidoscope_tavern.ice_wine",
-			0xf6d768,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "vinegar"),
-			"block.kaleidoscope_tavern.vinegar",
-			0xd2b45d,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			MOLOTOV_ID,
-			"block.kaleidoscope_tavern.molotov",
-			0xff6a00,
-			Set.of("kaleidoscope_tavern"),
-			ServingKind.BOTTLE,
-			250,
-			false,
-			TransferMode.STATIC_RECIPE
-		),
-
-		// 1.1.1 新更新的酒
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "polaris_sweet_white"),
-			"block.kaleidoscope_tavern.polaris_sweet_white",
-			0x7d7fa0,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "honey_wine"),
-			"block.kaleidoscope_tavern.honey_wine",
-			0x8a6830,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "red_queen"),
-			"block.kaleidoscope_tavern.red_queen",
-			0x7c2d2e,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "miners_star"),
-			"block.kaleidoscope_tavern.miners_star",
-			0xab7d56,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "rum"),
-			"block.kaleidoscope_tavern.rum",
-			0x7d3f31,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "riesling_dry_white"),
-			"block.kaleidoscope_tavern.riesling_dry_white",
-			0x696c32,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "sunset_glow"),
-			"block.kaleidoscope_tavern.sunset_glow",
-			0xb35b2a,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "madame_shexiang"),
-			"block.kaleidoscope_tavern.madame_shexiang",
-			0xb6733a,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "sweet_berry_wine"),
-			"block.kaleidoscope_tavern.sweet_berry_wine",
-			0x596359,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "sherry"),
-			"block.kaleidoscope_tavern.sherry",
-			0x8398ac,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "mother_snow"),
-			"block.kaleidoscope_tavern.mother_snow",
-			0x6f96bf,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "luminous_bride"),
-			"block.kaleidoscope_tavern.luminous_bride",
-			0x80aeba,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "glowflower_brew"),
-			"block.kaleidoscope_tavern.glowflower_brew",
-			0xbcb592,
-			Set.of("kaleidoscope_tavern")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "sauvignon_blanc_dry_white"),
-			"block.kaleidoscope_tavern.sauvignon_blanc_dry_white",
-			0x828648,
-			Set.of("kaleidoscope_tavern")
-		),
-
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "crimson_crescendo"),
-			"block.kaleidoscope_dim_wine.crimson_crescendo",
-			0x72231e,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "ethereal_noble"),
-			"block.kaleidoscope_dim_wine.ethereal_noble",
-			0x1e555a,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "wart_hennessy"),
-			"block.kaleidoscope_dim_wine.wart_hennessy",
-			0x9a3b3b,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "blaze_martell"),
-			"block.kaleidoscope_dim_wine.blaze_martell",
-			0xdb7f31,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "magma_royal_salute"),
-			"block.kaleidoscope_dim_wine.magma_royal_salute",
-			0x982c2c,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "black_bone_lafite"),
-			"block.kaleidoscope_dim_wine.black_bone_lafite",
-			0x504949,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "chorus_cognac"),
-			"block.kaleidoscope_dim_wine.chorus_cognac",
-			0x4b337f,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "dragons_breath_brandy"),
-			"block.kaleidoscope_dim_wine.dragons_breath_brandy",
-			0x6d029b,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "abyssal_porter"),
-			"block.kaleidoscope_dim_wine.abyssal_porter",
-			0x755e5e,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "silent_sherry"),
-			"block.kaleidoscope_dim_wine.silent_sherry",
-			0x9e4fc0,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "forgotten_margarita"),
-			"block.kaleidoscope_dim_wine.forgotten_margarita",
-			0x9a54ba,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "phantom_dream_bubble"),
-			"block.kaleidoscope_dim_wine.phantom_dream_bubble",
-			0xad77a5,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "end_starlight"),
-			"block.kaleidoscope_dim_wine.end_starlight",
-			0x3c3c3d,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "divine_embryo_port"),
-			"block.kaleidoscope_dim_wine.divine_embryo_port",
-			0xd4871a,
-			Set.of("kaleidoscope_dim_wine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "draconic_blood_wine"),
-			"block.kaleidoscope_dim_wine.draconic_blood_wine",
-			0x9810d3,
-			Set.of("kaleidoscope_dim_wine")
-		),
-
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "cave_glowbrew"),
-			"block.kaleidoscope_dim_wine.cave_glowbrew",
-			0x695c63,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "dawnlight_dew"),
-			"block.kaleidoscope_dim_wine.dawnlight_dew",
-			0xb86260,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "dead_end_spittle"),
-			"block.kaleidoscope_dim_wine.dead_end_spittle",
-			0xa1cdb6,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "snakeskin_liqueur"),
-			"block.kaleidoscope_dim_wine.snakeskin_liqueur",
-			0xb1713d,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "frostvein_beastblood"),
-			"block.kaleidoscope_dim_wine.frostvein_beastblood",
-			0x64a3d7,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "rangers_satchel"),
-			"block.kaleidoscope_dim_wine.rangers_satchel",
-			0x9d582b,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "embereye"),
-			"block.kaleidoscope_dim_wine.embereye",
-			0xffdf43,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "stagcall_monsoon"),
-			"block.kaleidoscope_dim_wine.stagcall_monsoon",
-			0x71e5d2,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "thornheart"),
-			"block.kaleidoscope_dim_wine.thornheart",
-			0xda757c,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "druids_secret_brew"),
-			"block.kaleidoscope_dim_wine.druids_secret_brew",
-			0xb488c8,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "moorglow_birds_song"),
-			"block.kaleidoscope_dim_wine.moorglow_birds_song",
-			0x94744e,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "perennial_frost"),
-			"block.kaleidoscope_dim_wine.perennial_frost",
-			0x8ec4fd,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "giants_hymn"),
-			"block.kaleidoscope_dim_wine.giants_hymn",
-			0xea6950,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "goblins_stash"),
-			"block.kaleidoscope_dim_wine.goblins_stash",
-			0x423f9b,
-			Set.of("kaleidoscope_dim_wine", "twilightforest")
-		),
-
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "sprite"),
-			"block.kaleidoscope_dim_wine.sprite",
-			0x7dab8a,
-			Set.of("kaleidoscope_dim_wine", "the_bumblezone")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "pepsi"),
-			"block.kaleidoscope_dim_wine.pepsi",
-			0xd6e6f3,
-			Set.of("kaleidoscope_dim_wine", "the_bumblezone")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "fanta"),
-			"block.kaleidoscope_dim_wine.fanta",
-			0xffb031,
-			Set.of("kaleidoscope_dim_wine", "the_bumblezone")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "pollen_nectar"),
-			"block.kaleidoscope_dim_wine.pollen_nectar",
-			0xf58d00,
-			Set.of("kaleidoscope_dim_wine", "the_bumblezone")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "honeythorn_mead"),
-			"block.kaleidoscope_dim_wine.honeythorn_mead",
-			0xf8b75c,
-			Set.of("kaleidoscope_dim_wine", "the_bumblezone")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "beeswax_honey_wine"),
-			"block.kaleidoscope_dim_wine.beeswax_honey_wine",
-			0xf9ab1c,
-			Set.of("kaleidoscope_dim_wine", "the_bumblezone")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "sweet_crystal_honey"),
-			"block.kaleidoscope_dim_wine.sweet_crystal_honey",
-			0xffce5d,
-			Set.of("kaleidoscope_dim_wine", "the_bumblezone")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "royal_honey_brew"),
-			"block.kaleidoscope_dim_wine.royal_honey_brew",
-			0xad69cc,
-			Set.of("kaleidoscope_dim_wine", "the_bumblezone")
-		),
-
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "divine_offering_brew"),
-			"block.kaleidoscope_dim_wine.divine_offering_brew",
-			0xc3d1d1,
-			Set.of("kaleidoscope_dim_wine", "aether")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "divine_energy_mist"),
-			"block.kaleidoscope_dim_wine.divine_energy_mist",
-			0xcaac62,
-			Set.of("kaleidoscope_dim_wine", "aether")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "swet_fizz"),
-			"block.kaleidoscope_dim_wine.swet_fizz",
-			0xfffc67,
-			Set.of("kaleidoscope_dim_wine", "aether")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "gravitite_drunk"),
-			"block.kaleidoscope_dim_wine.gravitite_drunk",
-			0xe3a2c2,
-			Set.of("kaleidoscope_dim_wine", "aether")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "healing_elixir"),
-			"block.kaleidoscope_dim_wine.healing_elixir",
-			0xd9d9d9,
-			Set.of("kaleidoscope_dim_wine", "aether")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "gingerbread_warmer"),
-			"block.kaleidoscope_dim_wine.gingerbread_warmer",
-			0x737460,
-			Set.of("kaleidoscope_dim_wine", "aether")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "unbound_skyborn"),
-			"block.kaleidoscope_dim_wine.unbound_skyborn",
-			0xb8bce3,
-			Set.of("kaleidoscope_dim_wine", "aether")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "divinity"),
-			"block.kaleidoscope_dim_wine.divinity",
-			0xb3926e,
-			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "star_trail"),
-			"block.kaleidoscope_dim_wine.star_trail",
-			0x938f8f,
-			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "aurora"),
-			"block.kaleidoscope_dim_wine.aurora",
-			0x68209a,
-			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "eclipse"),
-			"block.kaleidoscope_dim_wine.eclipse",
-			0x892a12,
-			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "lunar_eclipse"),
-			"block.kaleidoscope_dim_wine.lunar_eclipse",
-			0x2a334a,
-			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "deep_freeze"),
-			"block.kaleidoscope_dim_wine.deep_freeze",
-			0xc1c4cd,
-			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "blood_moon"),
-			"block.kaleidoscope_dim_wine.blood_moon",
-			0xc81616,
-			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "abyss"),
-			"block.kaleidoscope_dim_wine.abyss",
-			0x88180c,
-			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "blazing_sun"),
-			"block.kaleidoscope_dim_wine.blazing_sun",
-			0xff660e,
-			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_dim_wine", "wind_trace"),
-			"block.kaleidoscope_dim_wine.wind_trace",
-			0x6582ae,
-			Set.of("kaleidoscope_dim_wine", "eternal_starlight")
-		),
-
-		// Kaleidoscope Bloodwine 血酒
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "blood_grape_wine"),
-			"block.kaleidoscope_bloodwine.blood_grape_wine",
-			0x8a0e20,
-			Set.of("kaleidoscope_bloodwine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "blood_whiskey"),
-			"block.kaleidoscope_bloodwine.blood_whiskey",
-			0xd61c30,
-			Set.of("kaleidoscope_bloodwine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "blood_sakura_wine"),
-			"block.kaleidoscope_bloodwine.blood_sakura_wine",
-			0xd94460,
-			Set.of("kaleidoscope_bloodwine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "blood_champagne"),
-			"block.kaleidoscope_bloodwine.blood_champagne",
-			0xb83a50,
-			Set.of("kaleidoscope_bloodwine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "blood_vodka"),
-			"block.kaleidoscope_bloodwine.blood_vodka",
-			0xa06870,
-			Set.of("kaleidoscope_bloodwine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "blood_brandy"),
-			"block.kaleidoscope_bloodwine.blood_brandy",
-			0xe03838,
-			Set.of("kaleidoscope_bloodwine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "blood_carignan"),
-			"block.kaleidoscope_bloodwine.blood_carignan",
-			0xa81e1e,
-			Set.of("kaleidoscope_bloodwine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "eternal_night_crimson"),
-			"block.kaleidoscope_bloodwine.eternal_night_crimson",
-			0xc87060,
-			Set.of("kaleidoscope_bloodwine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "hunter_drink"),
-			"block.kaleidoscope_bloodwine.hunter_drink",
-			0x4070a0,
-			Set.of("kaleidoscope_bloodwine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "courtyard_blood_brew"),
-			"block.kaleidoscope_bloodwine.courtyard_blood_brew",
-			0xd07030,
-			Set.of("kaleidoscope_bloodwine")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_bloodwine", "sinmark_crimson"),
-			"block.kaleidoscope_bloodwine.sinmark_crimson",
-			0xc04830,
-			Set.of("kaleidoscope_bloodwine")
-		),
-
-		// Kaleidoscope Twilight 酒类
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "cave_firefly_brew"),
-			"block.kaleidoscope_twilight.cave_firefly_brew",
-			0x8B643D,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "twilight_dew"),
-			"block.kaleidoscope_twilight.twilight_dew",
-			0x4E7665,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "witchcraft_secret_brew"),
-			"block.kaleidoscope_twilight.witchcraft_secret_brew",
-			0x503552,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "snake_skin_liquor"),
-			"block.kaleidoscope_twilight.snake_skin_liquor",
-			0x5C3630,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "ice_crystal_frost_dew"),
-			"block.kaleidoscope_twilight.ice_crystal_frost_dew",
-			0x476579,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "magic_bean_brew"),
-			"block.kaleidoscope_twilight.magic_bean_brew",
-			0x2E4730,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "ember_eye"),
-			"block.kaleidoscope_twilight.ember_eye",
-			0x5E5B58,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "deer_song"),
-			"block.kaleidoscope_twilight.deer_song",
-			0x805C50,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "thorn_heart"),
-			"block.kaleidoscope_twilight.thorn_heart",
-			0x772038,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "druid_secret_brew"),
-			"block.kaleidoscope_twilight.druid_secret_brew",
-			0x516E41,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "glowing_night_bird_song"),
-			"block.kaleidoscope_twilight.glowing_night_bird_song",
-			0x8F5226,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "glacier_frost_dew"),
-			"block.kaleidoscope_twilight.glacier_frost_dew",
-			0x728599,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "giant_spirit"),
-			"block.kaleidoscope_twilight.giant_spirit",
-			0x9E8736,
-			Set.of("kaleidoscope_twilight")
-		),
-		new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "nature_spirit"),
-			"block.kaleidoscope_twilight.nature_spirit",
-			0x525526,
-			Set.of("kaleidoscope_twilight")
-		),
-
-		cocktail("white_lady", 0xF4E5C2),
-		cocktail("emerald", 0x2EA674),
-		cocktail("brass_heart", 0xC99A4B),
-		cocktail("godfather", 0xC07A3A),
-		cocktail("grasshopper", 0x6FA84F),
-		cocktail("screwdriver", 0xE89224),
-		cocktail("mojito", 0xA9CC5F),
-		cocktail("allium_garden", 0xB57EDC),
-		cocktail("depth_charge", 0xC66A2E),
-		cocktail("nether_special", 0x8A2BE2),
-		cocktail("bloody_mary", 0xB11E1E),
-		cocktail("sculk_special", 0x0E5B6B),
-
-		new CGTDrinkDefinition(
-			SIGNATURE_COCKTAIL_ID,
-			"block.kaleidoscope_tavern.signature_cocktail",
-			SIGNATURE_COCKTAIL_DEFAULT_COLOR,
-			Set.of("kaleidoscope_tavern"),
-			ServingKind.COCKTAIL_GLASS,
-			COCKTAIL_AMOUNT,
-			false,
-			TransferMode.COMPONENT_AWARE
-		)
-	);
-
-	private static CGTDrinkDefinition cocktail(String path, int color) {
-		return new CGTDrinkDefinition(
-			ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", path),
-			"block.kaleidoscope_tavern." + path,
-			color,
-			Set.of("kaleidoscope_tavern"),
-			ServingKind.COCKTAIL_GLASS,
-			COCKTAIL_AMOUNT,
-			false,
-			TransferMode.STATIC_RECIPE
-		);
-	}
-
-	private static final Map<ResourceLocation, CGTDrinkDefinition> BY_ID = DEFINITIONS.stream()
-		.collect(Collectors.toUnmodifiableMap(CGTDrinkDefinition::drinkId, Function.identity()));
-
-	private static final Map<String, CGTDrinkDefinition> BY_PATH = DEFINITIONS.stream()
-		.collect(Collectors.toUnmodifiableMap(def -> def.drinkId().getPath(), Function.identity()));
+	private static final Map<ResourceLocation, CGTDrinkDefinition> BY_ID = new LinkedHashMap<>();
+	private static final Map<Item, CGTDrinkDefinition> BY_ITEM = new IdentityHashMap<>();
+	private static List<CGTDrinkDefinition> definitions = List.of();
+	private static boolean complete;
 
 	private CGTDrinkCatalog() {
 	}
 
-	public static List<CGTDrinkDefinition> allDefinitions() {
-		return DEFINITIONS;
+	public static CGTDrinkDefinition discover(ResourceLocation itemId, Item item) {
+		if (complete || BY_ITEM.containsKey(item)) {
+			return null;
+		}
+		Kind kind;
+		if (item instanceof SignatureCocktailBlockItem) {
+			kind = Kind.SIGNATURE_COCKTAIL;
+		} else if (item instanceof CocktailBlockItem) {
+			kind = Kind.COCKTAIL;
+		} else if (item instanceof DrinkBlockItem) {
+			kind = Kind.DRINK;
+		} else if (item instanceof MolotovBlockItem) {
+			kind = Kind.MOLOTOV;
+		} else {
+			return null;
+		}
+		ResourceLocation drinkId = itemId;
+		if (itemId.equals(ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "signature_cocktail"))) {
+			drinkId = SIGNATURE_COCKTAIL_ID;
+		}
+		CGTDrinkDefinition definition = new CGTDrinkDefinition(itemId, drinkId, item, kind);
+		if (BY_ID.putIfAbsent(drinkId, definition) != null) {
+			throw new IllegalStateException("Duplicate drink identity: " + drinkId + " for " + itemId);
+		}
+		BY_ITEM.put(item, definition);
+		return definition;
 	}
 
-	public static List<CGTDrinkDefinition> enabledDefinitions(Set<String> loadedMods) {
-		return DEFINITIONS.stream()
-			.filter(def -> def.isEnabled(loadedMods))
+	public static void complete() {
+		if (complete) {
+			return;
+		}
+		definitions = BY_ID.values().stream()
+			.sorted(Comparator.comparing(definition -> definition.itemId().toString()))
 			.toList();
+		for (CGTDrinkDefinition definition : definitions) {
+			if (definition.containerItem() == null || definition.containerItem() == Items.AIR) {
+				throw new IllegalStateException("Missing drink container: " + definition.itemId());
+			}
+		}
+		complete = true;
+	}
+
+	public static List<CGTDrinkDefinition> allDefinitions() {
+		return complete ? definitions : List.copyOf(BY_ID.values());
+	}
+
+	public static CGTDrinkDefinition byItem(Item item) {
+		return BY_ITEM.get(item);
 	}
 
 	public static CGTDrinkDefinition byDrinkId(ResourceLocation id) {
@@ -728,26 +95,14 @@ public final class CGTDrinkCatalog {
 		return BY_ID.containsKey(id);
 	}
 
-	public static boolean hasSingleVariant(ResourceLocation id) {
-		return MOLOTOV_ID.equals(id);
-	}
-
 	public static int normalizedBrewLevel(ResourceLocation id, int brewLevel) {
-		if (!BY_ID.containsKey(id)) {
-			return brewLevel;
-		}
-		return BY_ID.get(id).qualityAware() ? brewLevel : LEVELLESS_BREW_LEVEL;
+		return byDrinkId(id).qualityAware()
+			? Math.clamp(brewLevel, IBarrel.BREWING_NOT_STARTED, IBarrel.BREWING_FINISHED)
+			: LEVELLESS_BREW_LEVEL;
 	}
 
 	public static boolean isSignatureCocktail(ResourceLocation id) {
-		return SIGNATURE_COCKTAIL_ID.equals(id);
-	}
-
-	public static CGTDrinkDefinition byPath(String path) {
-		CGTDrinkDefinition definition = BY_PATH.get(path);
-		if (definition == null) {
-			throw new IllegalArgumentException("Unknown drink path: " + path);
-		}
-		return definition;
+		CGTDrinkDefinition definition = BY_ID.get(id);
+		return definition != null && definition.componentAware();
 	}
 }

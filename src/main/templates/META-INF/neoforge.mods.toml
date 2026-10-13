@@ -102,30 +102,9 @@ config="${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]
     modId="jei"
     type="optional"
-    versionRange="[19.0.0,)"
+    versionRange="[19.18.0,)"
     ordering="AFTER"
     side="CLIENT"
-
-[[dependencies.${mod_id}]]
-    modId="kaleidoscope_twilight"
-    type="optional"
-    versionRange="[1.0.0,)"
-    ordering="AFTER"
-    side="BOTH"
-
-[[dependencies.${mod_id}]]
-    modId="kaleidoscope_dim_wine"
-    type="optional"
-    versionRange="[1.5.3,)"
-    ordering="AFTER"
-    side="BOTH"
-
-[[dependencies.${mod_id}]]
-    modId="kaleidoscope_bloodwine"
-    type="optional"
-    versionRange="[1.1.0,)"
-    ordering="AFTER"
-    side="BOTH"
 
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
